@@ -1,0 +1,26 @@
+#!/bin/bash 
+
+function extract_part() {
+ echo "$1" | sed  "s/^.*"$2" (@\([^)]*\)).*$/\1/g"
+}
+
+
+FILE=$1
+
+
+
+SL=$(cat $1 | sed "s/^  *//g" | sed "s/  */ /g" |  sed "s/( \([^)]*\) )/[\1]/g" | sed "s/\([^ ]*\) \([^ ]*]\)/\1,\2/g"  | tr -s "\n" "@" )
+
+
+NODES=$(extract_part "$SL" "NODES" | tr -s "@" "\n" | cut -d " " -f 1)
+NODES_COUNT=$(echo "$NODES" | wc -l)
+
+
+DEMANDS=$(extract_part "$SL" "DEMANDS" | tr -s "@" "\n" | tr -d "[]"  | cut -d " " -f 2,4 | tr -s "," " ") 
+DEMANDS_COUNT=$(echo "$DEMANDS" | wc -l)
+
+echo "$NODES_COUNT"
+echo "$NODES"
+
+echo "$DEMANDS_COUNT"
+echo "$DEMANDS"

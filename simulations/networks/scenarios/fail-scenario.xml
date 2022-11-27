@@ -1,0 +1,6 @@
+<scenario>
+  <at t="40">
+    <disconnect src-module="Milan" src-gate="pppg$o[0]" />
+    <disconnect src-module="Munich" src-gate="pppg$o[2]" />
+  </at>
+</scenario>

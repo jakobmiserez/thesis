@@ -1,0 +1,8 @@
+#
+# Use the new message compiler introduced in OMNeT++ 5.3
+#
+MSGC:=$(MSGC) --msg6
+
+INCLUDE_PATH:=$(INCLUDE_PATH) -I.
+
+CXXFLAGS:= -std=c++20 -O3

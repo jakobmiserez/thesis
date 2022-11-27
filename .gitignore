@@ -1,0 +1,29 @@
+out/
+.vscode/
+.idea
+.VSCodeCounter/
+
+src/protocol
+src/protocol_dbg
+
+# simulation videos
+simulations/.qtenvrc
+simulations/results/
+simulations/frames/
+*.mp4
+
+# trace files
+*.pcap 
+
+# valgrind 
+simulations/valgrind-out.txt
+
+# logs
+*.log
+.cmdenv-log
+.qtenvrc
+
+# perf 
+perf.data
+
+

@@ -1,0 +1,54 @@
+#!/bin/bash 
+
+# interesting vectors 
+# - end-to-end delay 
+# - end-to-end throughput
+# - accepted flows over time
+# - received flows over time 
+#
+# interesting scalars
+# - flowRequestsAccepted
+# - flowRequestsReceived
+# - flowRequestsFailed
+
+PREFIX=$1
+
+FLOWS_FILE=$PREFIX.flows
+VECTOR_FILE=$PREFIX.vec
+SCALAR_FILE=$PREFIX.sca
+
+OUTPUT_DIR=~/results/data
+
+# Export global flow acceptance numbers
+scavetool export \
+  -f 'name("flowRequestsReceived") OR name("flowRequestsAccepted") OR name("flowRequestsFailed")' \
+  -F CSV-R \
+  -o $OUTPUT_DIR/flow-requests.csv \
+  $SCALAR_FILE
+
+echo "Exported flow requests"
+
+# Export end to end delays per sink 
+scavetool export \
+  -f 'name("endToEndDelay:vector")' \
+  -F CSV-R \
+  -o $OUTPUT_DIR/flow-delays.csv \
+  $VECTOR_FILE
+
+echo "Exported delays"
+
+# Export throughput 
+scavetool export \
+  -f 'name("throughput:vector")' \
+  -F CSV-R \
+  -o $OUTPUT_DIR/flow-throughputs.csv \
+  $VECTOR_FILE
+
+echo "Exported throughputs"
+
+cp $FLOWS_FILE $OUTPUT_DIR/$FLOWS_FILE
+
+
+
+
+
