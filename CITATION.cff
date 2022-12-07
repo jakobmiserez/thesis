@@ -4,7 +4,7 @@
 cff-version: 1.2.0
 title: >-
   Distributed routing protocols exploiting queue
-  information for scalable deterministic networking
+  information for scalable deterministic networking - implementation
 message: >-
   If you use this software, please cite it using the
   metadata from this file.
