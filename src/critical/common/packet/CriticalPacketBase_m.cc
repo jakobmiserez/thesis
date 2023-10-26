@@ -1005,7 +1005,7 @@ unsigned int CriticalPacketBaseDescriptor::getFieldTypeFlags(int field) const
         field -= basedesc->getFieldCount();
     }
     static unsigned int fieldTypeFlags[] = {
-        FD_ISEDITABLE,    // FIELD_type
+        0,    // FIELD_type
     };
     return (field >= 0 && field < 1) ? fieldTypeFlags[field] : 0;
 }
@@ -1132,7 +1132,6 @@ bool CriticalPacketBaseDescriptor::setFieldValueAsString(void *object, int field
     }
     CriticalPacketBase *pp = (CriticalPacketBase *)object; (void)pp;
     switch (field) {
-        case FIELD_type: pp->setType((critical::PacketType)string2enum(value, "critical::PacketType")); return true;
         default: return false;
     }
 }

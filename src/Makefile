@@ -1,12 +1,12 @@
 #
-# OMNeT++/OMNEST Makefile for protocol
+# OMNeT++/OMNEST Makefile for thesis
 #
 # This file was generated with the command:
-#  opp_makemake -f --deep -KINET_PROJ=/home/jakob/program-files/inet -DINET_IMPORT -I/home/jakob/program-files/omnetpp-5.6.2/include -I$$\(INET_PROJ\)/src -L$$\(INET_PROJ\)/src -lINET$$\(D\)
+#  opp_makemake -f --deep -KINET_PROJ=/root/models/inet -DINET_IMPORT -I/root/omnetpp/include -I$(INET_PROJ)/src -L$(INET_PROJ)/src -lINET$(D)
 #
 
 # Name of target to be created (-o option)
-TARGET = protocol$(D)$(EXE_SUFFIX)
+TARGET = thesis$(D)$(EXE_SUFFIX)
 TARGET_DIR = .
 
 # User interface (uncomment one) (-u option)
@@ -16,7 +16,7 @@ USERIF_LIBS = $(ALL_ENV_LIBS) # that is, $(TKENV_LIBS) $(QTENV_LIBS) $(CMDENV_LI
 #USERIF_LIBS = $(QTENV_LIBS)
 
 # C++ include paths (with -I)
-INCLUDE_PATH = -I/home/jakob/program-files/omnetpp-5.6.2/include -I$(INET_PROJ)/src
+INCLUDE_PATH = -I/root/omnetpp/include -I$(INET_PROJ)/src
 
 # Additional object and library files to link with
 EXTRA_OBJS =
@@ -113,7 +113,7 @@ MSGFILES = \
 SMFILES =
 
 # Other makefile variables (-K)
-INET_PROJ=/home/jakob/program-files/inet
+INET_PROJ=/root/models/inet
 
 #------------------------------------------------------------------------------
 
@@ -164,7 +164,7 @@ MSGC:=$(MSGC) --msg6
 
 INCLUDE_PATH:=$(INCLUDE_PATH) -I.
 
-CXXFLAGS:= -std=c++20 -O3
+CXXFLAGS:= -std=c++2a -O3
 
 # <<<
 #------------------------------------------------------------------------------

@@ -55,6 +55,21 @@ BudgetAllocator ParameterReader::getAllocater() {
     return BudgetAllocator::CHAMELEON;
   if (strValue == "custom")
     return BudgetAllocator::CUSTOM;
+  if (strValue == "exp_100_100_2")
+    return BudgetAllocator::EXP_DIFF_100_100_2;
+
+  if (strValue == "lin_100_200_100")
+    return BudgetAllocator::LINEAR_DIFF_100_200_100;
+  if (strValue == "lin_100_400_200")
+    return BudgetAllocator::LINEAR_DIFF_100_400_200;
+  
+  if (strValue == "const_100_500")
+    return BudgetAllocator::CONSTANT_DIFF_100_500;
+  if (strValue == "const_500_500")
+    return BudgetAllocator::CONSTANT_DIFF_500_500;
+  if (strValue == "const_500_0")
+    return BudgetAllocator::CONSTANT_DIFF_500_0;
+
   throw cRuntimeError("Unknown allocator strategy: %s", strValue.c_str());
 }
     

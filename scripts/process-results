@@ -21,7 +21,7 @@ OUTPUT_DIR=~/results/data
 
 # Export global flow acceptance numbers
 scavetool export \
-  -f 'name("flowRequestsReceived") OR name("flowRequestsAccepted") OR name("flowRequestsFailed")' \
+  -f 'name("flowRequestsReceived") OR name("flowRequestsAccepted") OR name("flowRequestsOngoing")' \
   -F CSV-R \
   -o $OUTPUT_DIR/flow-requests.csv \
   $SCALAR_FILE

@@ -3,6 +3,10 @@
 
 #include "ChameleonAllocator.h"
 #include "CustomAllocator.h"
+#include "ExponentialAllocator.h"
+#include "LinearAllocator.h"
+#include "ConstantAllocator.h"
+
 #include "critical/parameters/CriticalProtocolParameters.h"
 
 #include <omnetpp.h>
@@ -19,8 +23,32 @@ class BudgetAllocatorFactory {
         case CUSTOM:
           return new CustomAllocator();
         case CHAMELEON:
-        default:
           return new ChameleonAllocator();
+        
+        case EXP_DIFF_100_100_2:
+          return new ExpAllocator(100, 100, 2);
+
+        case LINEAR_DIFF_100_200_100:
+          return new LinearAllocator(100, 200, 100);
+        case LINEAR_DIFF_100_400_200:
+          return new LinearAllocator(100, 400, 200);
+
+        case CONSTANT_DIFF_50_100:
+          return new ConstantAllocator(50, 100);
+        case CONSTANT_DIFF_50_200:
+          return new ConstantAllocator(50, 200);
+        case CONSTANT_DIFF_100_500:
+          return new ConstantAllocator(100, 500);
+        case CONSTANT_DIFF_500_500:
+          return new ConstantAllocator(500, 500);
+        case CONSTANT_DIFF_100_0:
+          return new ConstantAllocator(100, 0);
+        case CONSTANT_DIFF_500_0:
+          return new ConstantAllocator(500, 0);
+        case CONSTANT_DIFF_1000_0:
+          return new ConstantAllocator(1000, 0);
+        default:
+          throw cRuntimeError("Unavailable allocator");
       }
     };
 };

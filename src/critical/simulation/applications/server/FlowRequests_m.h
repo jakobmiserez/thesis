@@ -1,5 +1,5 @@
 //
-// Generated file, do not edit! Created by nedtool 5.6 from critical/models/applications/server/FlowRequests.msg.
+// Generated file, do not edit! Created by nedtool 5.6 from critical/simulation/applications/server/FlowRequests.msg.
 //
 
 #ifndef __CRITICAL_FLOWREQUESTS_M_H
@@ -34,7 +34,7 @@ class FlowInterruptedPacket;
 namespace critical {
 
 /**
- * Enum generated from <tt>critical/models/applications/server/FlowRequests.msg:6</tt> by nedtool.
+ * Enum generated from <tt>critical/simulation/applications/server/FlowRequests.msg:6</tt> by nedtool.
  * <pre>
  * enum FlowPacketType
  * {
@@ -53,7 +53,7 @@ enum FlowPacketType {
 };
 
 /**
- * Class generated from <tt>critical/models/applications/server/FlowRequests.msg:13</tt> by nedtool.
+ * Class generated from <tt>critical/simulation/applications/server/FlowRequests.msg:13</tt> by nedtool.
  * <pre>
  * class FlowRequestPacketBase extends inet::FieldsChunk
  * {
@@ -108,7 +108,7 @@ inline void doParsimPacking(omnetpp::cCommBuffer *b, const FlowRequestPacketBase
 inline void doParsimUnpacking(omnetpp::cCommBuffer *b, FlowRequestPacketBase& obj) {obj.parsimUnpack(b);}
 
 /**
- * Class generated from <tt>critical/models/applications/server/FlowRequests.msg:23</tt> by nedtool.
+ * Class generated from <tt>critical/simulation/applications/server/FlowRequests.msg:23</tt> by nedtool.
  * <pre>
  * class FlowRequestPacket extends FlowRequestPacketBase
  * {
@@ -158,7 +158,7 @@ inline void doParsimPacking(omnetpp::cCommBuffer *b, const FlowRequestPacket& ob
 inline void doParsimUnpacking(omnetpp::cCommBuffer *b, FlowRequestPacket& obj) {obj.parsimUnpack(b);}
 
 /**
- * Class generated from <tt>critical/models/applications/server/FlowRequests.msg:33</tt> by nedtool.
+ * Class generated from <tt>critical/simulation/applications/server/FlowRequests.msg:33</tt> by nedtool.
  * <pre>
  * class FlowResponsePacket extends FlowRequestPacketBase
  * {
@@ -200,7 +200,7 @@ inline void doParsimPacking(omnetpp::cCommBuffer *b, const FlowResponsePacket& o
 inline void doParsimUnpacking(omnetpp::cCommBuffer *b, FlowResponsePacket& obj) {obj.parsimUnpack(b);}
 
 /**
- * Class generated from <tt>critical/models/applications/server/FlowRequests.msg:41</tt> by nedtool.
+ * Class generated from <tt>critical/simulation/applications/server/FlowRequests.msg:41</tt> by nedtool.
  * <pre>
  * class FlowFreePacket extends FlowRequestPacketBase
  * {
@@ -237,7 +237,7 @@ inline void doParsimPacking(omnetpp::cCommBuffer *b, const FlowFreePacket& obj) 
 inline void doParsimUnpacking(omnetpp::cCommBuffer *b, FlowFreePacket& obj) {obj.parsimUnpack(b);}
 
 /**
- * Class generated from <tt>critical/models/applications/server/FlowRequests.msg:47</tt> by nedtool.
+ * Class generated from <tt>critical/simulation/applications/server/FlowRequests.msg:47</tt> by nedtool.
  * <pre>
  * class FlowInterruptedPacket extends FlowRequestPacketBase
  * {

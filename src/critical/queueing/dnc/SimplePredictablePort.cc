@@ -64,8 +64,11 @@ void SimplePredictablePort::initialize(double linkRate) {
   // Allocate protocol resources
   uint64_t protocolLinkRate = ceil(linkRate * protocolParams.protocolBwUsage);
   FlowParameters params(0, protocolLinkRate, protocolParams.protocolBurstUsage);
-  if (!canAllocateFlow(protocolParams.protocolQueue, params)) {
-    throw cRuntimeError("Cannot allocate protocol resources without violating the queue budgets");
+  int failedQueue = -1;
+  if (!canAllocateFlow(protocolParams.protocolQueue, params, &failedQueue)) {
+    std::string message = "Cannot allocate protocol resources without violating the queue budgets of queue ";
+    message += std::to_string(failedQueue);
+    throw cRuntimeError(message.c_str());
   }
   allocateFlow(protocolParams.protocolQueue, params);
 }
@@ -87,12 +90,14 @@ void SimplePredictablePort::override(std::vector<QueueInfo> newQueues) {
   ASSERT(check());
 }
 
-bool SimplePredictablePort::canAllocateFlow(int queue, const FlowParameters& params) const {
+bool SimplePredictablePort::canAllocateFlow(int queue, const FlowParameters& params, int* failedQueue) const {
   auto flow = params.dncModel();
 
   // First check if the flow can be added to the desired queue
   if (!queues[queue].canAllocateFlow(flow)) {
     EV_INFO << "Single queue\n";
+    if (failedQueue != nullptr)
+      *failedQueue = queue;
     return false;
   }
   // Now, check if adding the queue would violate lower priority queues constraints
@@ -125,6 +130,8 @@ bool SimplePredictablePort::canAllocateFlow(int queue, const FlowParameters& par
 
     i++;
   }
+  if (!allowed && failedQueue != nullptr)
+    *failedQueue = queue - 1;
 
   return allowed;
 }
