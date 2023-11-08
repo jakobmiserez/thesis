@@ -135,6 +135,17 @@ TopLevelMessageHandler* LsRouter::createMessageHandler() {
   return new LsMessageHandler(protocol);
 }
 
+uint64_t LsRouter::estimateMemoryFootprint() const {
+  uint64_t bytes = 0;
+  bytes += primaryPathTable.estimateMemoryFootprint();
+  bytes += secondaryPathTable.estimateMemoryFootprint();
+  bytes += messageHandler->estimateMemoryFootprint();
+  bytes += queueLevelTopology.computeMemoryFootprint();
+  bytes += qosLsas.computeMemoryFootprint();
+  bytes += tries.size() * sizeof(int);
+  return bytes;
+}
+
 }
 
 }

@@ -26,6 +26,10 @@ class LsMessageHandler: public MinimalLsMessageHandler {
       embedConfirmHandler(this),
       embedFailHandler(this) {};
     virtual ~LsMessageHandler() {};
+
+    virtual uint64_t estimateMemoryFootprint() const override {
+      return 0;
+    }
   
 };
 

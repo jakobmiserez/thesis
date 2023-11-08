@@ -143,6 +143,7 @@ class Topology: public NonCopyable {
       std::map<RouterId, RouterNode*> routerNodes;
       std::set<SubnetNode*> subnetNodes;
       std::vector<const Link*> path;
+      size_t links;
 
       static std::function<double(const Link&)> DEFAULT_COST_FUNCTION;
       static Empty INITIAL_NO_ACCESS_CONTROL;
@@ -158,6 +159,8 @@ class Topology: public NonCopyable {
       std::set<SubnetNode*> getSubnetNodes() { return subnetNodes; };
       void print() const;
       void printPath() const;
+
+      uint64_t computeMemoryFootprint() const;
 
     protected:
       Node* addRouterNode(const RouterId& routerId);

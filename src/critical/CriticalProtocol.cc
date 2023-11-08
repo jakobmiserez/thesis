@@ -26,6 +26,7 @@ Define_Module(CriticalProtocol);
 const inet::Protocol CriticalProtocol::asInetProtocol("critical", "CRITICAL");
 simsignal_t CriticalProtocol::consumptionSignal = registerSignal("consumptionSignal");
 simsignal_t CriticalProtocol::queueStateSignal = registerSignal("queueStateSignal");
+simsignal_t CriticalProtocol::routeSignal = registerSignal("routeSignal");
 
 
 CriticalProtocol::CriticalProtocol() {
@@ -56,6 +57,8 @@ void CriticalProtocol::initialize(int stage) {
     params = ParameterReader().readParams(this);
     criticalPacketsLost = 0;
     protocolPacketsSent = 0;
+    protocolBytesSent = 0;
+    maxMemoryFootprint = 0;
   }
   else if (stage == inet::INITSTAGE_ROUTING_PROTOCOLS) {
     inet::registerService(asInetProtocol, nullptr, gate("ipIn"));
@@ -67,22 +70,16 @@ void CriticalProtocol::initialize(int stage) {
 void CriticalProtocol::finish() {
   recordScalar("packetsLost", criticalPacketsLost);
   recordScalar("protocolPacketsSent", protocolPacketsSent);
+  recordScalar("protocolBytesSent", protocolBytesSent);
   recordScalar("qosOverrides", qosOverrides);
   recordScalar("collisions", collisions);
   recordScalar("straightFails", straightFails);
+  recordScalar("maxMemoryFootprint", maxMemoryFootprint);
 
   for (int i = 1; i < router->numPorts(); i++) {
     const auto& port = router->getPort(i);
-
     std::string baseName = "consumption";
     baseName += std::to_string(i);
-
-    /*
-    for (int j = 0; j < port.getNumQueues(); j++) {
-      std::string queueName = baseName + "-" + std::to_string(j);
-    }
-    */
-
     recordScalar(baseName.c_str(), port.getConsumptionChecker().getAbsoluteConsumption());
   }
 
@@ -114,6 +111,9 @@ void CriticalProtocol::handleMessageWhenUp(cMessage* msg) {
     if (it == delayQueue.end()) {
       // Pass the message to the router message handler
       router->getMessageHandler()->receiveMessage(msg);
+
+      // Record memory footprint after message was handled
+      recordMemoryFootprint();
     }
     else {
       sendPacket((*it).second);
@@ -147,6 +147,7 @@ void CriticalProtocol::sendPacket(inet::Packet* packet) {
   }
 
   send(packet, gate("ipOut"));
+  protocolBytesSent += packet->getByteLength();
   protocolPacketsSent++;
 }
 
@@ -307,6 +308,25 @@ void CriticalProtocol::unsubscribeSignals() {
   host->unsubscribe(inet::interfaceCreatedSignal, this);
   host->unsubscribe(inet::interfaceDeletedSignal, this);
   host->unsubscribe(inet::interfaceStateChangedSignal, this);
+}
+
+void CriticalProtocol::recordMemoryFootprint() {
+  if (!params.recordMemoryFootprint)
+    return;
+
+  tries++;
+
+  uint64_t footprint = 0;
+  footprint += flowTable.estimateMemoryFootprint();
+  footprint += router->estimateMemoryFootprint();
+
+  if (footprint > maxMemoryFootprint)
+    maxMemoryFootprint = footprint;
+
+  if (tries > 1000) {
+    if (maxMemoryFootprint == 0)
+      throw cRuntimeError("dafiek");
+  }
 }
 
 }

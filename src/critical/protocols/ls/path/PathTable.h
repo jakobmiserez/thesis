@@ -34,6 +34,10 @@ class PathTable: public NonCopyable {
       BundledLinks(const RouterId& routerId, int linkId): routerId(routerId), linkId(linkId) {};
 
       bool isEmpty() { return entries.empty(); }
+
+      uint64_t estimateMemoryFootprint() const {
+        return entries.size() * sizeof(FlowMapEntry<FlowData>*);
+      }
     };
 
     struct FlowData {
@@ -78,6 +82,16 @@ class PathTable: public NonCopyable {
      * @return std::vector<FlowData> 
      */
     std::vector<Flow> removeAllGoingThrough(const RouterId& routerId, int linkId);
+
+    uint64_t estimateMemoryFootprint() const {
+      uint64_t bytes = flowMap.size() * sizeof(FlowMapEntry<FlowData>);
+      for (const auto& [_, entries]: table) {
+        for (const auto& entry: entries) {
+          bytes += entry.second->estimateMemoryFootprint();
+        }
+      }
+      return bytes;
+    }
 
   private:
     BundledLinks* findOrCreateZippedLink(const RouterId& routerId, int linkId);

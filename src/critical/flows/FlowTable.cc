@@ -75,5 +75,9 @@ void FlowTable::onDelete(const FlowTableEntry* entry) {
   notifyListeners([entry](IFlowTableListener* l) { l->onFlowDelete(entry); });
 }
 
+uint64_t FlowTable::estimateMemoryFootprint() const {
+  return flowMap->size() * sizeof(FlowTableEntry);
+}
+
 }
 

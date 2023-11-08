@@ -52,9 +52,13 @@ class CriticalProtocol :
     CriticalProtocolParameters params;
     int criticalPacketsLost;
     int protocolPacketsSent;
+    uint64_t protocolBytesSent;
+    uint64_t maxMemoryFootprint;
+    int tries = 0;
 
     static simsignal_t consumptionSignal;
     static simsignal_t queueStateSignal;
+    static simsignal_t routeSignal;
 
   public:
     int qosOverrides = 0;
@@ -178,6 +182,9 @@ class CriticalProtocol :
     virtual void handleStartOperation(inet::LifecycleOperation* operation) override;
     virtual void handleStopOperation(inet::LifecycleOperation* operation) override;
     virtual void handleCrashOperation(inet::LifecycleOperation* operation) override;
+
+  private:
+    void recordMemoryFootprint();
 
   private:
     RouterBase* createRouter();

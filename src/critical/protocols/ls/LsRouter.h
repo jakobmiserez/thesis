@@ -81,7 +81,9 @@ class LsRouter: public MinimalLsRouter, public IConsumptionListener {
      * 
      * @param interfaceId 
      */
-    void sendOutQosLsa(int interfaceId);  
+    void sendOutQosLsa(int interfaceId);
+
+    virtual uint64_t estimateMemoryFootprint() const override;
 
   protected:
     virtual TopLevelMessageHandler* createMessageHandler() override;

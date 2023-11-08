@@ -31,6 +31,8 @@ class LinearFlowMap: public IFlowMap<T>, public NonCopyable {
 
     virtual FlowMapEntry<T>* removeFlow(const FlowId& flow) override;
 
+    virtual size_t size() const override;
+
     FlowMapEntry<T>* insertIfAbsent(const FlowId& flow, T data);
 
   private:

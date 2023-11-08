@@ -20,6 +20,10 @@ class MinimalLsMessageHandler: public TopLevelMessageHandler {
       lsaHandler(this) {};
     virtual ~MinimalLsMessageHandler() {};
 
+    virtual uint64_t estimateMemoryFootprint() const override {
+      return 0;
+    }
+
 };
 
 }

@@ -26,6 +26,11 @@ class DfMessageHandler: public ls::MinimalLsMessageHandler {
       freeFailureHandler(this) {};
     ~DfMessageHandler() {};
 
+  virtual uint64_t estimateMemoryFootprint() const override {
+      return multiplexer.estimateMemoryFootprint();
+    };
+
+
 };
 
 }

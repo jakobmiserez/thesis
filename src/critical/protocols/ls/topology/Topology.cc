@@ -14,7 +14,7 @@ Empty Topology::INITIAL_NO_ACCESS_CONTROL;
 Topology::NoAccessControl Topology::NO_ACCESS_CONTROL;
 
 
-Topology::Topology() {
+Topology::Topology(): links(0) {
 
 }
 
@@ -31,6 +31,7 @@ void Topology::clear() {
     delete node;
   }
   subnetNodes.clear();
+  links = 0;
 }
 
 Topology::Node* Topology::addRouterNode(const RouterId& routerId) {
@@ -55,6 +56,7 @@ Topology::Node* Topology::addSubnetNode(const inet::Ipv6Address& networkPrefix, 
 
 void Topology::addLink(int id, Node* from, Node* to, double cost) {
   from->outgoingLinks.emplace_back(id, from, to, cost);
+  links++;
 }
 
 
@@ -235,6 +237,10 @@ void Topology::buildPath(Node* from, Node* to) {
     path[j] = path[i];
     path[i] = temp;
   }
+}
+
+uint64_t Topology::computeMemoryFootprint() const {
+  return routerNodes.size() * sizeof(RouterNode) + subnetNodes.size() * sizeof(SubnetNode) + links * sizeof(Link);
 }
 
 // Explicitly instantiate generic methods 

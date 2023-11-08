@@ -58,6 +58,15 @@ class ProbingRouter : public ls::MinimalLsRouter {
 
     virtual void handleLinkFailure(int interfaceId) override;
 
+    virtual uint64_t estimateMemoryFootprint() const override {
+      uint64_t bytes = 0;
+      bytes += oldFlows.size() * sizeof(FlowMapEntry<FlowTableData>);
+      bytes += externalFlows.size() * sizeof(FlowMapEntry<Empty>);
+      bytes += messageHandler->estimateMemoryFootprint();
+
+      return bytes;
+    };
+
   protected:
     virtual TopLevelMessageHandler* createMessageHandler() override;
 

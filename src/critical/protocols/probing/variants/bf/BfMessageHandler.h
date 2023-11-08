@@ -28,6 +28,10 @@ class BfMessageHandler: public ls::MinimalLsMessageHandler {
       freeFailureHandler(this) {};
     virtual ~BfMessageHandler() {};
 
+    virtual uint64_t estimateMemoryFootprint() const override {
+      return multiplexer.estimateMemoryFootprint();
+    };
+
 };
 
 }

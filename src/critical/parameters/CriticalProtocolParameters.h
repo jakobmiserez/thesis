@@ -93,6 +93,8 @@ struct CriticalProtocolParameters {
 
   // Probing: enable fast pruning
   bool probingFastPrune;
+  
+  bool recordMemoryFootprint;
 };
 
 }

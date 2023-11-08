@@ -119,6 +119,10 @@ class SimplePredictablePort: public Parameterizable {
 
     void printQueueStates() const;
 
+    uint64_t computeMemoryFootprint() const {
+      return sizeof(SimplePredictablePort) + queues.size() * sizeof(PredictableQueue);
+    };
+
     private:
       void updateLowerQueues(int queue);
 };

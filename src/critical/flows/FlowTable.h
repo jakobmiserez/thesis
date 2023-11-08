@@ -114,6 +114,11 @@ class FlowTable: public Observable<IFlowTableListener>, public NonCopyable {
       uint32_t label
     );
 
+    /**
+     * Computes the memory footprint of the flow table 
+     **/
+    virtual uint64_t estimateMemoryFootprint() const;
+
   private:
     void onDelete(const FlowTableEntry* entry);
     void onConfirm(const FlowTableEntry* entry);

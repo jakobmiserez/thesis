@@ -169,7 +169,9 @@ class RouterBase: public Parameterizable, public IFailureHandler {
      */
     void reroute(const FlowId& flow, const FlowParameters& params);
     void reroute(const Flow& flow) { reroute(flow.id, flow.params); };
-  
+
+    virtual uint64_t estimateMemoryFootprint() const = 0;
+    
   protected:
     /**
      * @brief Create the message handler for this router.

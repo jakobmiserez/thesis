@@ -13,6 +13,8 @@ class TopLevelMessageHandler: public MessageHandlerBase {
 
     void receiveMessage(cMessage* msg);
 
+    virtual uint64_t estimateMemoryFootprint() const = 0;
+
 };
 
 }

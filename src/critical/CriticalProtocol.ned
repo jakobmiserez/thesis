@@ -28,14 +28,19 @@ simple CriticalProtocol {
         double protocolBwUsage = default(0.05); 
         int protocolBurstUsage @unit(B) = default(1000B);
         int protocolQueue = default(0);
+
+        // stats parameters
+        bool recordMemoryFootprint = default(false);
         
         @class("critical::CriticalProtocol");
         @display("i=block/network");
 
         @signal[queueStateSignal](type=critical::QueueRecorderData);
         @signal[consumptionSignal](type=critical::ConsumptionRecorderData);
+        @signal[routeSignal](type=long);
         @statistic[consumption](title="consumption"; source=consumptionSignal; record=recordConsumption);
         @statistic[queueState](title="queueStates"; source=queueStateSignal; record=recordQueueState);
+        @statistic[routingTimes](title="routingTimes"; source=routeSignal; record=vector);
     gates:
         input ipIn;
         output ipOut;
