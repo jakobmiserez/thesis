@@ -6,14 +6,13 @@
 
 #include "FlowRecorderData.h"
 
+#include <fstream>
+
 using namespace omnetpp;
 
 namespace critical {
 
 class FlowRequirementsRecorder: public cResultRecorder {
-  private:
-    std::vector<FlowRequirements> flows;
-
   public:
     FlowRequirementsRecorder() {};
     virtual ~FlowRequirementsRecorder() {};
@@ -30,6 +29,11 @@ class FlowRequirementsRecorder: public cResultRecorder {
     virtual void receiveSignal(cResultFilter *prev, simtime_t_cref t, cObject *obj, cObject *details) override;
 
   private:
+    void init();
+
+  private:
+    bool isInit = false;
+    std::ofstream out;
     std::string getOutputFileName();
 };
 

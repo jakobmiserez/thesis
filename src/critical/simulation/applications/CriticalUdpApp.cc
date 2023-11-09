@@ -111,7 +111,7 @@ void CriticalUdpApp::sendRequest() {
   socket.sendTo(packet, flowServerAddress, 4096);
   requestSent = true;
 
-  FlowRequestData signalData(this);
+  FlowRequestData signalData(this, getFlowId());
   emit(flowRequestSignal, &signalData);
 }
 
@@ -186,7 +186,7 @@ void CriticalUdpApp::handleResponse(const FlowResponsePacket* response) {
     }
   }
 
-  FlowResponseData data(this, response->getAccepted());
+  FlowResponseData data(this, getFlowId(), response->getAccepted());
   emit(flowResponseSignal, &data);
 }
 
@@ -260,6 +260,11 @@ void CriticalUdpApp::resolveAddresses() {
 bool CriticalUdpApp::shouldSend() {
   return (maxPacketsToSend < 0 || numSent < maxPacketsToSend) && 
   (duration.isZero() || simTime() <= startTime + duration);
+}
+
+FlowId CriticalUdpApp::getFlowId() const {
+  FlowId id(srcAddress.toIpv6(), destAddress.toIpv6(), label);
+  return id;
 }
 
 }

@@ -32,9 +32,6 @@ void ConsumptionManager::recordConsumption(
   cModule* source, simtime_t t, int interfaceId, 
   double addedConsumption, double maxConsumption
 ) {
-
-  EV_INFO << maxConsumption << "\n";
-
   out << source->getFullPath() << ",";
   out << interfaceId << ",";
   out << t << ",";

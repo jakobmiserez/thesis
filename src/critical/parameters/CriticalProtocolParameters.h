@@ -95,6 +95,8 @@ struct CriticalProtocolParameters {
   bool probingFastPrune;
   
   bool recordMemoryFootprint;
+  bool recordQueueStates;
+  bool recordConsumption;
 };
 
 }

@@ -8,27 +8,22 @@ namespace critical {
 Register_ResultRecorder("captureFlow", FlowRequirementsRecorder);
 
 void FlowRequirementsRecorder::finish(cResultFilter *prev) {
-  if (flows.size() > 0) {
-    std::ofstream out(getOutputFileName());
+  out.close();
+  isInit = false;
+}
 
-    if (out.fail()) {
-      return;
-    }
+void FlowRequirementsRecorder::init() {
+  std::string fname = getOutputFileName();
+  out = std::ofstream(fname);
 
-    out << "source,sink,delay,rate,burst\n";
-
-    for (int i = 0; i < flows.size(); i++) {
-      FlowRequirements& req = flows[i];
-      out << req.getSource()->getFullPath() << ",";
-      out << req.getSink()->getFullPath() << ",";
-      out << req.getFlowParameters().delay << ",";
-      out << req.getFlowParameters().rate << ",";
-      out << req.getFlowParameters().burst << "\n";
-    }
-
-    out.close();
-
+  if (out.fail()) {
+    std::string f = "Failed to open consumption file";
+    f += fname;
+    throw cRuntimeError(f.c_str());
   }
+
+  out << "source,sink,delay,rate,burst\n";
+  isInit = true;
 }
 
 void FlowRequirementsRecorder::receiveSignal(cResultFilter *prev, simtime_t_cref t, bool b, cObject *details) {
@@ -56,19 +51,22 @@ void FlowRequirementsRecorder::receiveSignal(cResultFilter *prev, simtime_t_cref
 }
 
 void FlowRequirementsRecorder::receiveSignal(cResultFilter *prev, simtime_t_cref t, cObject *obj, cObject *details) {
-  const FlowRequirements* req = check_and_cast<FlowRequirements*>(obj);
-  flows.push_back(*req);
+  if (!isInit) {
+    init();
+  }
+  
+  FlowRequirements* req = check_and_cast<FlowRequirements*>(obj);
+  out << req->getSource()->getFullPath() << ",";
+  out << req->getSink()->getFullPath() << ",";
+  out << req->getFlowParameters().delay << ",";
+  out << req->getFlowParameters().rate << ",";
+  out << req->getFlowParameters().burst << "\n";
 }
 
 std::string FlowRequirementsRecorder::getOutputFileName() {
   cConfigOption* opt = cConfigOption::find("output-scalar-file");
 
-  //getSimulation()->getActiveEnvir()->getConfigEx()->getActiveRunNumber()
-
   std::string filename = getSimulation()->getActiveEnvir()->getConfig()->getAsFilename(opt);
-  if (getSimulation()->getActiveEnvir()->getConfigEx()->getActiveRunNumber() > 0) {
-    //throw cRuntimeError("YES");
-  }
   cStringTokenizer tokenizer(filename.c_str(), ".");
 
   std::string finalName(tokenizer.nextToken());

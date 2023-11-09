@@ -2,6 +2,7 @@
 #define __CRITICALUDPAPP_H
 
 #include "critical/simulation/applications/server/FlowRequests_m.h"
+#include "critical/flows/Flow.h"
 
 #include <inet/applications/base/ApplicationBase.h>
 #include <inet/transportlayer/contract/udp/UdpSocket.h>
@@ -80,6 +81,8 @@ class CriticalUdpApp:
     void processPacket(inet::Packet* msg);
     void resolveAddresses();
     bool shouldSend();
+
+    FlowId getFlowId() const;
 
 };
 

@@ -57,13 +57,15 @@ LsRouter::RouteResult LsRouter::startRouting(
     return FAILED;
   }
 
-  queueLevelTopology.printPath();
+  //queueLevelTopology.printPath();
   primaryPathTable.insertPath(flow, path.value());
 
   auto info = QueueLevelTopologyLinkEncoding::decodeLink(path.value().at(0)->getId());
-  if (!getPortById(info.linkId)->canAllocateFlow(info.queue, flow.params)) {
-    throw cRuntimeError("Your path computation is garbage\n");
-  }
+  //if (!getPortById(info.linkId)->canAllocateFlow(info.queue, flow.params)) {
+  //  throw cRuntimeError("Your path computation is garbage\n");
+  //}
+
+  protocol->onPathSignaling(flow.id);
 
   protocol->sendPacketLo(packetCreator.createEmbedPacket(flow, path.value()));
   return ONGOING;

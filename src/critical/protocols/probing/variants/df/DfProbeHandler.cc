@@ -83,6 +83,8 @@ bool DfProbeHandler::handleAtDestination() {
     );
   }
 
+  getProtocol()->onPathSignaling(state.flow);
+
   sendPacketBack(PacketCreator::createFlowConfirmPacket(state.flow));
   return true;
 }

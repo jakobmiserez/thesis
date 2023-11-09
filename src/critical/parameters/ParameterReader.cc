@@ -23,7 +23,9 @@ CriticalProtocolParameters ParameterReader::readParams(cModule* protocol) {
   params.lsUpdateInterval = par("lsUpdateInterval").doubleValue();
 
   params.recordMemoryFootprint = par("recordMemoryFootprint").boolValue();
-
+  params.recordQueueStates = par("recordQueueStates").boolValue();
+  params.recordConsumption = par("recordConsumption").boolValue();
+  
   validateParams(params);
   return params;
 }

@@ -90,6 +90,7 @@ OBJS = \
     $O/critical/simulation/recorder/FlowRequirementsRecorder.o \
     $O/critical/simulation/recorder/FlowRerouteRecorder.o \
     $O/critical/simulation/recorder/FlowResponseRecorder.o \
+    $O/critical/simulation/recorder/FlowSignalingRecorder.o \
     $O/critical/simulation/recorder/QueueManager.o \
     $O/critical/simulation/recorder/QueueRecorder.o \
     $O/critical/simulation/scheduler/Scheduler.o \

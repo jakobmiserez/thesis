@@ -31,16 +31,23 @@ simple CriticalProtocol {
 
         // stats parameters
         bool recordMemoryFootprint = default(false);
+        bool recordConsumption = default(false);
+        bool recordQueueStates = default(false);
         
         @class("critical::CriticalProtocol");
         @display("i=block/network");
 
         @signal[queueStateSignal](type=critical::QueueRecorderData);
         @signal[consumptionSignal](type=critical::ConsumptionRecorderData);
-        @signal[routeSignal](type=long);
+        @signal[routeSignal](type="long");
+        @signal[packetProcessingSignal](type="long");
+        @signal[flowSignalingSignal](type=critical::FlowSignalingData);
+        
         @statistic[consumption](title="consumption"; source=consumptionSignal; record=recordConsumption);
         @statistic[queueState](title="queueStates"; source=queueStateSignal; record=recordQueueState);
-        @statistic[routingTimes](title="routingTimes"; source=routeSignal; record=vector);
+        @statistic[routingTime](title="routingTime"; source=routeSignal; record=vector);
+        @statistic[packetProcessingTime](title="packetProcessingTime"; source=packetProcessingSignal; record=vector);
+        @statistic[flowSignaling](title="flowSignaling"; source=flowSignalingSignal; record=recordFlowSignaling);
     gates:
         input ipIn;
         output ipOut;

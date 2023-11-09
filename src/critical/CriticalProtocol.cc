@@ -7,6 +7,7 @@
 #include <inet/networklayer/ipv6/Ipv6Header_m.h>
 #include <inet/networklayer/common/NextHopAddressTag_m.h>
 #include <inet/linklayer/common/InterfaceTag_m.h>
+#include <chrono>
 
 #include "critical/protocols/probing/ProbingRouter.h"
 #include "critical/protocols/ls/LsRouter.h"
@@ -14,6 +15,7 @@
 #include "critical/parameters/ParameterReader.h"
 #include "simulation/recorder/ConsumptionRecorder.h"
 #include "simulation/recorder/QueueRecorder.h"
+#include "simulation/recorder/FlowRecorderData.h"
 
 using namespace omnetpp;
 
@@ -27,6 +29,8 @@ const inet::Protocol CriticalProtocol::asInetProtocol("critical", "CRITICAL");
 simsignal_t CriticalProtocol::consumptionSignal = registerSignal("consumptionSignal");
 simsignal_t CriticalProtocol::queueStateSignal = registerSignal("queueStateSignal");
 simsignal_t CriticalProtocol::routeSignal = registerSignal("routeSignal");
+simsignal_t CriticalProtocol::packetProcessingSignal = registerSignal("packetProcessingSignal");
+simsignal_t CriticalProtocol::flowSignalingSignal = registerSignal("flowSignalingSignal");
 
 
 CriticalProtocol::CriticalProtocol() {
@@ -95,12 +99,14 @@ void CriticalProtocol::handleMessageWhenUp(cMessage* msg) {
       auto& port = router->getPort(i);
       port.addListener(this);
 
-      for (int q = 0; q < port.getNumQueues(); q++) {
-        const auto& queue = router->getPort(i).getQueues()[q];
-        QueueRecorderData queueData(this, port.getId(), q, 
-        queue.getQueueingDelayBound(), queue.getDelayBudgetInSeconds(),
-        queue.getBufferSizeBound(), queue.getBufferSizeBudget());
-        emit(queueStateSignal, &queueData);
+      if (params.recordQueueStates) {
+        for (int q = 0; q < port.getNumQueues(); q++) {
+          const auto& queue = router->getPort(i).getQueues()[q];
+          QueueRecorderData queueData(this, port.getId(), q, 
+          queue.getQueueingDelayBound(), queue.getDelayBudgetInSeconds(),
+          queue.getBufferSizeBound(), queue.getBufferSizeBudget());
+          emit(queueStateSignal, &queueData);
+        }
       }
     }
       
@@ -109,11 +115,20 @@ void CriticalProtocol::handleMessageWhenUp(cMessage* msg) {
   else {
     auto it = delayQueue.find(msg);
     if (it == delayQueue.end()) {
+
+      auto startTime = std::chrono::high_resolution_clock::now();
+
       // Pass the message to the router message handler
       router->getMessageHandler()->receiveMessage(msg);
 
-      // Record memory footprint after message was handled
-      recordMemoryFootprint();
+      auto endTime = std::chrono::high_resolution_clock::now();
+      auto duration = std::chrono::duration_cast<std::chrono::microseconds>(endTime - startTime);
+      emit(packetProcessingSignal, (long)duration.count());
+
+      if (params.recordMemoryFootprint) {
+        // Record memory footprint after message was handled
+        recordMemoryFootprint();
+      }
     }
     else {
       sendPacket((*it).second);
@@ -240,9 +255,15 @@ void CriticalProtocol::initiateRouting(
   uint64_t burst
 ) {
   Enter_Method_Silent("initiateRouting()");
+
+  auto startTime = std::chrono::high_resolution_clock::now();
   
   // Initiate the routing process for this flow
   RouterBase::RouteResult res = router->startRouting(source, dest, label, delay, bandwidth, burst);
+
+  auto endTime = std::chrono::high_resolution_clock::now();
+  auto duration = std::chrono::duration_cast<std::chrono::microseconds>(endTime - startTime);
+  emit(routeSignal, (long)duration.count());
 
   // If the flow is immediately  rejected, we can inform the listeners immediately
   if (res == RouterBase::RouteResult::FAILED) {
@@ -274,20 +295,25 @@ void CriticalProtocol::onFlowAccepted(const FlowTableEntry* entry) {
     });
   }
 
-  // Emit consumption
-  int id = entry->data.nextInterface;
-  double maxc = (double)router->getPortById(id)->getLinkRate();
-  double registered = entry->data.params.rate;
-  ConsumptionRecorderData data(this, id, registered, maxc);
-  emit(consumptionSignal, &data);
+  if (params.recordConsumption) {
+    // Emit consumption
+    int id = entry->data.nextInterface;
+    double maxc = (double)router->getPortById(id)->getLinkRate();
+    double registered = entry->data.params.rate;
+    ConsumptionRecorderData data(this, id, registered, maxc);
+    emit(consumptionSignal, &data);
+  }
 
-  // Emit queue
-  const auto& queue = router->getPortById(id)->getQueues()[entry->data.queueNumber];
-  QueueRecorderData queueData(this, id, entry->data.queueNumber, 
-    queue.getQueueingDelayBound(), queue.getDelayBudgetInSeconds(),
-    queue.getBufferSizeBound(), queue.getBufferSizeBudget()
-  );
-  emit(queueStateSignal, &queueData);
+  if (params.recordQueueStates) {
+    // Emit queue
+    int id = entry->data.nextInterface;
+    const auto& queue = router->getPortById(id)->getQueues()[entry->data.queueNumber];
+    QueueRecorderData queueData(this, id, entry->data.queueNumber, 
+      queue.getQueueingDelayBound(), queue.getDelayBudgetInSeconds(),
+      queue.getBufferSizeBound(), queue.getBufferSizeBudget()
+    );
+    emit(queueStateSignal, &queueData);
+  }
 }
 
 void CriticalProtocol::onFlowDelete(const FlowTableEntry* entry) {
@@ -311,22 +337,17 @@ void CriticalProtocol::unsubscribeSignals() {
 }
 
 void CriticalProtocol::recordMemoryFootprint() {
-  if (!params.recordMemoryFootprint)
-    return;
-
-  tries++;
-
   uint64_t footprint = 0;
   footprint += flowTable.estimateMemoryFootprint();
   footprint += router->estimateMemoryFootprint();
 
   if (footprint > maxMemoryFootprint)
     maxMemoryFootprint = footprint;
+}
 
-  if (tries > 1000) {
-    if (maxMemoryFootprint == 0)
-      throw cRuntimeError("dafiek");
-  }
+void CriticalProtocol::onPathSignaling(const FlowId& flowId) {
+  FlowSignalingData data(flowId);
+  emit(flowSignalingSignal, &data);
 }
 
 }

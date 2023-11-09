@@ -59,6 +59,8 @@ class CriticalProtocol :
     static simsignal_t consumptionSignal;
     static simsignal_t queueStateSignal;
     static simsignal_t routeSignal;
+    static simsignal_t packetProcessingSignal;
+    static simsignal_t flowSignalingSignal;
 
   public:
     int qosOverrides = 0;
@@ -157,6 +159,11 @@ class CriticalProtocol :
     virtual void onFlowDelete(const FlowTableEntry* entry) override;
 
     virtual void onConsumptionChange(int id, bool significant, bool up) override;
+
+    /**
+     * Callback to be called when a confirmed path is being signaled into the network 
+     **/
+    void onPathSignaling(const FlowId& flowId);
 
   protected:
     virtual void initialize(int stage) override;
