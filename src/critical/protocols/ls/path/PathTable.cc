@@ -26,20 +26,31 @@ void PathTable::clear() {
 void PathTable::insertPath(const Flow& flow, const std::vector<const Topology::Link*>& path) {
   EV_INFO << "(PATH TABLE) Inserting path\n";
 
-  FlowMapEntry<FlowData>* entry = flowMap.insertFlow(flow.id, { flow.params });
+  // Creates an entry
+  //FlowMapEntry<FlowData>* entry = flowMap.insertFlow(flow.id, { flow.params });
+  flowMapEntries++;
+
   for (const auto& link: path) {
+    tableEntries++;
+    /*
     int linkId = QueueLevelTopologyLinkEncoding::getLinkId(link->getId());
 
     BundledLinks* bundle = findOrCreateZippedLink(link->getFrom()->getRouterId(), linkId);
     bundle->entries.insert(entry);
 
     entry->data.scatteredPath.insert(bundle);
+    */
   }
 };
 
 void PathTable::removePath(const FlowId& flow) {
   EV_INFO << "(PATH TABLE) Removing path\n";
   FlowMapEntry<FlowData>* entry = flowMap.lookupFlow(flow);
+  if (entry == nullptr) {
+    EV_ERROR << "(PATH TABLE) Entry not found: " << flow << "\n";
+    return;
+  }
+  
   for (auto bundle: entry->data.scatteredPath) {
     bundle->entries.erase(entry);
     eraseAndClean(bundle);

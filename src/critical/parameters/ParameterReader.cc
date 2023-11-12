@@ -25,7 +25,10 @@ CriticalProtocolParameters ParameterReader::readParams(cModule* protocol) {
   params.recordMemoryFootprint = par("recordMemoryFootprint").boolValue();
   params.recordQueueStates = par("recordQueueStates").boolValue();
   params.recordConsumption = par("recordConsumption").boolValue();
-  
+
+  params.optimizeMemoryFootprintRecording = par("optimizeMemoryFootprintRecording").boolValue();
+  params.optimizeLsas = par("optimizeLsas").boolValue();
+
   validateParams(params);
   return params;
 }
@@ -59,9 +62,25 @@ BudgetAllocator ParameterReader::getAllocater() {
     return BudgetAllocator::CHAMELEON;
   if (strValue == "custom")
     return BudgetAllocator::CUSTOM;
+  if (strValue == "const1")
+    return BudgetAllocator::CONST1;
+  if (strValue == "exp")
+    return BudgetAllocator::EXP;
+  if (strValue == "gap")
+    return BudgetAllocator::GAP;
+  if (strValue == "increasing1")
+    return BudgetAllocator::INCREASING1;
+  if (strValue == "increasing2")
+    return BudgetAllocator::INCREASING2;
+  if (strValue == "simple1")
+    return BudgetAllocator::SIMPLE1;
+  if (strValue == "simple2")
+    return BudgetAllocator::SIMPLE2;
+  if (strValue == "simple3")
+    return BudgetAllocator::SIMPLE3;
+
   if (strValue == "exp_100_100_2")
     return BudgetAllocator::EXP_DIFF_100_100_2;
-
   if (strValue == "lin_100_200_100")
     return BudgetAllocator::LINEAR_DIFF_100_200_100;
   if (strValue == "lin_100_400_200")

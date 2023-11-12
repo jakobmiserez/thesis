@@ -41,6 +41,7 @@ class CriticalProtocol :
 
   private: 
     cMessage* startUp = nullptr;
+    cMessage* memoryTimer = nullptr;
     cModule* host = nullptr;
     std::map<cMessage*, inet::Packet*> delayQueue;
 

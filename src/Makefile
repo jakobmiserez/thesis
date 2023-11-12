@@ -82,6 +82,7 @@ OBJS = \
     $O/critical/simulation/applications/CriticalAppGenerator.o \
     $O/critical/simulation/applications/CriticalUdpApp.o \
     $O/critical/simulation/applications/server/FlowServerApp.o \
+    $O/critical/simulation/lsaoptimizer/LSAOptimizer.o \
     $O/critical/simulation/recorder/ConsumptionManager.o \
     $O/critical/simulation/recorder/ConsumptionRecorder.o \
     $O/critical/simulation/recorder/FlowRecorderData.o \

@@ -1,4 +1,4 @@
-package protocol.simulations.networks.evaluation;
+package protocol.simulations.networks.evaluation.scalability;
 import critical.simulation.router.*;
 import inet.networklayer.configurator.ipv6.Ipv6FlatNetworkConfigurator;
 import inet.node.ipv6.StandardHost6;

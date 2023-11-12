@@ -8,7 +8,7 @@ import critical.simulation.scheduler.*;
 import inet.common.scenario.ScenarioManager;
 
 // polska--D-B-M-N-C-A-N-N from SNDLib
-network polska {
+network Polska {
   types:
     channel fiberline extends ned.DatarateChannel {
       parameters:

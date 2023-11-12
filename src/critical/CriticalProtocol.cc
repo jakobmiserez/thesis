@@ -41,6 +41,7 @@ CriticalProtocol::CriticalProtocol() {
 CriticalProtocol::~CriticalProtocol() {
   flowTable.removeListener(this);
   cancelAndDelete(startUp);
+  cancelAndDelete(memoryTimer);
   for (auto [timer, packet]: delayQueue) {
     delete packet;
     cancelAndDelete(timer);
@@ -53,6 +54,7 @@ void CriticalProtocol::initialize(int stage) {
   if (stage == inet::INITSTAGE_LOCAL) {
     // Initialize local information
     startUp = new cMessage("Critical protocol start-up");
+    memoryTimer = new cMessage("Critical protocol memory optimizer");
     interfaceTable = inet::getModuleFromPar<inet::IInterfaceTable>(par("interfaceTableModule"), this);
     routingTable = inet::getModuleFromPar<inet::IRoutingTable>(par("routingTableModule"), this);
     networkProtocol = inet::getModuleFromPar<inet::INetfilter>(par("networkProtocolModule"), this);
@@ -109,8 +111,10 @@ void CriticalProtocol::handleMessageWhenUp(cMessage* msg) {
         }
       }
     }
-      
     subscribeSignals();
+  }
+  else if (msg == memoryTimer) {
+    recordMemoryFootprint();
   }
   else {
     auto it = delayQueue.find(msg);
@@ -125,7 +129,7 @@ void CriticalProtocol::handleMessageWhenUp(cMessage* msg) {
       auto duration = std::chrono::duration_cast<std::chrono::microseconds>(endTime - startTime);
       emit(packetProcessingSignal, (long)duration.count());
 
-      if (params.recordMemoryFootprint) {
+      if (params.recordMemoryFootprint && !params.optimizeMemoryFootprintRecording) {
         // Record memory footprint after message was handled
         recordMemoryFootprint();
       }
@@ -142,6 +146,10 @@ void CriticalProtocol::handleStartOperation(inet::LifecycleOperation* operation)
   // Schedule the startup timer message to boot up the protocol
   SimTime next(2, SimTimeUnit::SIMTIME_S);
   scheduleAt(simTime() + next, startUp);
+
+  if (params.optimizeMemoryFootprintRecording) {
+    scheduleAt(SimTime(19, SimTimeUnit::SIMTIME_S), memoryTimer);
+  }
 }
 
 void CriticalProtocol::handleStopOperation(inet::LifecycleOperation* operation) {

@@ -3,7 +3,6 @@ package critical;
 simple CriticalProtocol {
     parameters:
         // Generic parameters
-        double startDelay @unit(s)  = uniform(0.5s, 1.5s); 
         string interfaceTableModule;
         string routingTableModule;
         string networkProtocolModule = default(absPath("^.ipv6.ipv6"));
@@ -22,7 +21,8 @@ simple CriticalProtocol {
         double lsUpdateInterval @unit(s) = default(0.025s); 
 
         // budgetAllocator
-        string budgetAllocator @enum("chameleon", "custom") = default("chameleon");
+        //string budgetAllocator @enum("chameleon", "custom") = default("chameleon");
+        string budgetAllocator = default("chameleon");
         
         // Protocol resource allocation
         double protocolBwUsage = default(0.05); 
@@ -33,9 +33,14 @@ simple CriticalProtocol {
         bool recordMemoryFootprint = default(false);
         bool recordConsumption = default(false);
         bool recordQueueStates = default(false);
+
+        // Optimization shortcuts for large-scale simulations
+        bool optimizeMemoryFootprintRecording = default(false);
+        bool optimizeLsas = default(false);
         
         @class("critical::CriticalProtocol");
         @display("i=block/network");
+        @criticalProtocol;
 
         @signal[queueStateSignal](type=critical::QueueRecorderData);
         @signal[consumptionSignal](type=critical::ConsumptionRecorderData);

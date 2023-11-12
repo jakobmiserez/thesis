@@ -68,7 +68,19 @@ bool QosLsaDatabase::insertQosLsa(const QosLsaPacket* const qosLsaPacket) {
 
   EV_INFO << "Link id: " << lsa.linkId << "\n";
 
-  QosLsa& entry = database.at(routerId).at(lsa.linkId);
+  auto routerEntry = database.find(routerId);
+  if (routerEntry == database.end()) {
+    EV_ERROR << "QoSLsaDatabase: could not find routerId with id " << routerId.str().c_str() << "\n";
+    return false;
+  }
+  
+  auto lsaEntry = routerEntry->second.find(lsa.linkId);
+  if (lsaEntry == routerEntry->second.end()) {
+    EV_ERROR << "QoSLsaDatabase: could not find " << routerId.str().c_str() << " " << std::to_string(lsa.linkId).c_str() << "\n";
+    return false;
+  }
+  
+  QosLsa& entry = lsaEntry->second;
 
   if (lsa.sequenceNumber > entry.sequenceNumber) {
     protocol->qosOverrides++;

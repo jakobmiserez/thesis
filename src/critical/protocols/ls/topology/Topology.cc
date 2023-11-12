@@ -170,7 +170,10 @@ void Topology::computeDistance(Node* from, Node* to) {
 }
 
 Topology::Node* Topology::getNodeWithId(const RouterId& routerId) const {
-  return routerNodes.at(routerId);
+  auto node = routerNodes.find(routerId);
+  if (node == routerNodes.end())
+    throw cRuntimeError("Topology: could not find node with %s", routerId.str().c_str());
+  return node->second;
 }
       
 Topology::Node* Topology::getDestinationNode(const inet::Ipv6Address& destination) const {

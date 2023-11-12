@@ -84,12 +84,14 @@ class PathTable: public NonCopyable {
     std::vector<Flow> removeAllGoingThrough(const RouterId& routerId, int linkId);
 
     uint64_t estimateMemoryFootprint() const {
-      uint64_t bytes = flowMap.size() * sizeof(FlowMapEntry<FlowData>);
-      for (const auto& [_, entries]: table) {
-        for (const auto& entry: entries) {
-          bytes += entry.second->estimateMemoryFootprint();
-        }
-      }
+      uint64_t bytes = flowMapEntries * sizeof(FlowMapEntry<FlowData>);
+      bytes += tableEntries * sizeof(FlowMapEntry<FlowData>*);
+      //uint64_t bytes = flowMap.size() * sizeof(FlowMapEntry<FlowData>);
+      //for (const auto& [_, entries]: table) {
+      //  for (const auto& entry: entries) {
+      //    bytes += entry.second->estimateMemoryFootprint();
+      //  }
+      //}
       return bytes;
     }
 
@@ -99,6 +101,10 @@ class PathTable: public NonCopyable {
     void eraseAndClean(BundledLinks*& bundle);
 
     bool contains(const RouterId& routerId, int linkId);
+
+  private:
+    uint64_t flowMapEntries = 0;
+    uint64_t tableEntries = 0;
 
 };
 

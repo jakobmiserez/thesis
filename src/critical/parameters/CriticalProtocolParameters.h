@@ -11,8 +11,19 @@ enum RoutingProtocol {
 };
 
 enum BudgetAllocator {
+  CUSTOM = 0,
   CHAMELEON,
-  CUSTOM,
+  CONST1,
+  EXP,
+  GAP,
+  INCREASING1,
+  INCREASING2,
+  SIMPLE1,
+  SIMPLE2,
+  SIMPLE3,
+  
+
+
 
   CONSTANT_DIFF_50_100,
   CONSTANT_DIFF_50_200,
@@ -29,7 +40,9 @@ enum BudgetAllocator {
   
   LOG_DIFF,
 
-  QUADRATIC_DIFF 
+  QUADRATIC_DIFF
+
+
 };
 
 enum LsAlgorithm {
@@ -97,6 +110,10 @@ struct CriticalProtocolParameters {
   bool recordMemoryFootprint;
   bool recordQueueStates;
   bool recordConsumption;
+
+  // Optimization shortcuts
+  bool optimizeMemoryFootprintRecording;
+  bool optimizeLsas;
 };
 
 }

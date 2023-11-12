@@ -29,6 +29,15 @@ void FlowRequestResponseManager::init() {
 
 void FlowRequestResponseManager::lifecycleEvent(SimulationLifecycleEventType eventType, cObject *details) {
   if (eventType == SimulationLifecycleEventType::LF_ON_RUN_END) {
+    for (const auto& [id, data]: map) {
+      out << data->source << ",";
+      out << data->requestTime << ",";
+      out << data->responseTime << ",";
+      out << data->signalingTime << ",";
+      out << data->accepted << "\n";
+    }
+    map.clear();
+    
     out.close();
     outReroutes.close();
     delete this;

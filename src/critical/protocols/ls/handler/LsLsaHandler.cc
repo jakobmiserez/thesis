@@ -56,16 +56,20 @@ void LsLsaHandler::handleTimer(cMessage* timer) {
   // Insert the router's own lsa such that is in the database
   router->getLSAs().insertLsa(data);
 
-  for (const auto& [_, entry]: nt) {
-    if (entry.isFullyAdjacent()) {
-      sendPacket(lsa->dup(), entry.interfaceId, entry.neighborAddress);
+  // If optimize LSAs is false, then we send actual LSAs in order to build the network map.
+  // Otherwise, we rely on external simulation tools like the 'LsaOptimizer' to fix this.
+  if (!getProtocol()->getParams().optimizeLsas) {
+    for (const auto& [_, entry]: nt) {
+      if (entry.isFullyAdjacent()) {
+        sendPacket(lsa->dup(), entry.interfaceId, entry.neighborAddress);
+      }
     }
   }
 
   delete lsa;
 
   // Start collection after 2 seconds 
-  pparent->startTimer(&lsaCollectTimer, 2.0);
+  pparent->startTimer(&lsaCollectTimer, SimTime(2.0, SimTimeUnit::SIMTIME_S));
 }
 
 void LsLsaHandler::handleLsaCollection() {

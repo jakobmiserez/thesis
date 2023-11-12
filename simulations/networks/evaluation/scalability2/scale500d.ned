@@ -6,6 +6,7 @@ import inet.networklayer.configurator.ipv6.Ipv6FlatNetworkConfigurator;
 import inet.node.ipv6.StandardHost6;
 import critical.simulation.scheduler.*;
 import inet.common.scenario.ScenarioManager;
+import critical.simulation.lsaoptimizer.*;
 
 network scale500d {
   types:
@@ -17,6 +18,7 @@ network scale500d {
     }
 
   submodules:
+    lsaOptimizer: LsaOptimizer {};
     configurator: Ipv6FlatNetworkConfigurator {}
     scheduler: Scheduler {}
     scenarioManager: ScenarioManager {}
