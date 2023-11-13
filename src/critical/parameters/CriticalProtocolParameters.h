@@ -114,6 +114,9 @@ struct CriticalProtocolParameters {
   // Optimization shortcuts
   bool optimizeMemoryFootprintRecording;
   bool optimizeLsas;
+  bool optimizePathTables;
+
+  double countPacketStatsAfter;
 };
 
 }

@@ -71,12 +71,12 @@ void FlowRequestResponseManager::recordFlowResponse(FlowResponseData* respData, 
 
 void FlowRequestResponseManager::recordFlowReroute(cModule* source, simtime_t t, bool accepted) {
   outReroutes << source->getFullPath() << ",";
-  out << t << ",";
-  out << accepted << "\n";
+  outReroutes << t << ",";
+  outReroutes << accepted << "\n";
 }
 
 void FlowRequestResponseManager::recordFlowSignaling(FlowSignalingData* sigData, simtime_t t) {
-  Data* data = map.at(sigData->getId());
+  Data* data = map.at(sigData->getId()); // todo fix
 
   // Only record the first signaling time
   if (data->signalingTime == -1)

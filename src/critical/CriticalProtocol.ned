@@ -29,6 +29,9 @@ simple CriticalProtocol {
         int protocolBurstUsage @unit(B) = default(1000B);
         int protocolQueue = default(0);
 
+        // stats config
+        double countPacketStatsAfter @unit(s) = default(0s);
+
         // stats parameters
         bool recordMemoryFootprint = default(false);
         bool recordConsumption = default(false);
@@ -37,6 +40,7 @@ simple CriticalProtocol {
         // Optimization shortcuts for large-scale simulations
         bool optimizeMemoryFootprintRecording = default(false);
         bool optimizeLsas = default(false);
+        bool optimizePathTables = default(false);
         
         @class("critical::CriticalProtocol");
         @display("i=block/network");

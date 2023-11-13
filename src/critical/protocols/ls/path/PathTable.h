@@ -1,6 +1,7 @@
 #ifndef _CRITICAL_LS_PATHTABLE_H
 #define _CRITICAL_LS_PATHTABLE_H
 
+#include "critical/common/util/Parameterizable.h"
 #include "critical/flows/Flow.h"
 #include "critical/flows/map/linear/LinearFlowMap.h"
 #include "critical/common/util/Util.h"
@@ -22,7 +23,7 @@ namespace ls {
  * by scattering the path and bundling common links together. 
  * 
  */
-class PathTable: public NonCopyable {
+class PathTable: public NonCopyable, public Parameterizable {
   private:
     struct FlowData;
     
@@ -48,8 +49,10 @@ class PathTable: public NonCopyable {
   private:
     LinearFlowMap<FlowData> flowMap;
     std::map<RouterId, std::unordered_map<int, BundledLinks*>> table;
+    LinearFlowMap<int> optimizedData;
 
   public:
+    PathTable(CriticalProtocol* protocol);
     virtual ~PathTable();
 
     /**

@@ -9,7 +9,9 @@ namespace ls {
 
 LsRouter::LsRouter(CriticalProtocol* protocol)
 : MinimalLsRouter(protocol),
-  qosLsas(lsas, protocol) {
+  qosLsas(lsas, protocol),
+  primaryPathTable(protocol),
+  secondaryPathTable(protocol) {
 
 }
 

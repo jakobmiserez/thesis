@@ -28,6 +28,9 @@ CriticalProtocolParameters ParameterReader::readParams(cModule* protocol) {
 
   params.optimizeMemoryFootprintRecording = par("optimizeMemoryFootprintRecording").boolValue();
   params.optimizeLsas = par("optimizeLsas").boolValue();
+  params.optimizePathTables = par("optimizePathTables").boolValue();
+
+  params.countPacketStatsAfter = par("countPacketStatsAfter").doubleValue();
 
   validateParams(params);
   return params;

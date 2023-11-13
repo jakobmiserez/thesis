@@ -43,6 +43,7 @@ void LsaOptimizer::handleMessage(cMessage* msg) {
         for (int j = i + 1; j < routers.size(); j++) {
             routers[j]->getLSAs().insertLsa(data);
         }
+        delete data;
     }
 
     routers.clear();

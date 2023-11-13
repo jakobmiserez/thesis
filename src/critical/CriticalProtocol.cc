@@ -170,8 +170,10 @@ void CriticalProtocol::sendPacket(inet::Packet* packet) {
   }
 
   send(packet, gate("ipOut"));
-  protocolBytesSent += packet->getByteLength();
-  protocolPacketsSent++;
+  if (simTime() > params.countPacketStatsAfter) {
+    protocolBytesSent += packet->getByteLength();
+    protocolPacketsSent++;
+  }
 }
 
 void CriticalProtocol::sendPacketDelayed(inet::Packet* packet, double delay) {
@@ -354,8 +356,8 @@ void CriticalProtocol::recordMemoryFootprint() {
 }
 
 void CriticalProtocol::onPathSignaling(const FlowId& flowId) {
-  FlowSignalingData data(flowId);
-  emit(flowSignalingSignal, &data);
+  //FlowSignalingData data(flowId);
+  //emit(flowSignalingSignal, &data);
 }
 
 }
