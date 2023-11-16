@@ -23,6 +23,7 @@ class Scheduler: public cSimpleModule {
     simtime_t startTime;
     simtime_t duration;
     simtime_t interval;
+    int maxScheduledFlows;
     int flowsPerInterval;
 
     std::vector<cModule*> hosts;

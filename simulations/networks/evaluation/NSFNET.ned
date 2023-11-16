@@ -4,6 +4,7 @@ import critical.simulation.router.*;
 import inet.networklayer.configurator.ipv6.Ipv6FlatNetworkConfigurator;
 import inet.node.ipv6.StandardHost6;
 import critical.simulation.scheduler.*;
+import inet.common.scenario.ScenarioManager;
 
 network NSFNET
 {
@@ -17,6 +18,7 @@ network NSFNET
         }
 
     submodules:
+        scenarioManager: ScenarioManager {};
         r1: CriticalAreaRouter {
             @display("p=82,122");
         }

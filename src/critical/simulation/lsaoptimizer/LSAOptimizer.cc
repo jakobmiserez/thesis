@@ -8,7 +8,7 @@ namespace critical {
 Register_Class(LsaOptimizer);
 
 LsaOptimizer::~LsaOptimizer() {
-    delete timer;
+    cancelAndDelete(timer);
 }
 
 void LsaOptimizer::initialize(int stage) {
@@ -43,7 +43,7 @@ void LsaOptimizer::handleMessage(cMessage* msg) {
         for (int j = i + 1; j < routers.size(); j++) {
             routers[j]->getLSAs().insertLsa(data);
         }
-        delete data;
+        delete packet;
     }
 
     routers.clear();

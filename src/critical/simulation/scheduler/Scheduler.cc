@@ -28,6 +28,7 @@ void Scheduler::initialize(int stage) {
     duration = par("duration");
     interval = par("interval");
     flowsPerInterval = par("flowsPerInterval").intValue();
+    maxScheduledFlows = par("maxScheduledFlows").intValue();
     timer = new cMessage("Scheduler timer");
     timer->setKind(TimerKind::START);
     scheduleAt(startTime < simTime() ? simTime() : startTime, timer);
@@ -61,9 +62,12 @@ void Scheduler::scheduleFlows() {
   std::vector<std::pair<std::string,std::string>> flows;
   flows.reserve(flowsPerInterval);
   for (int i = 0; i < flowsPerInterval; i++) {
+    if (maxScheduledFlows > 0 && scheduledFlows > maxScheduledFlows) {
+      continue;
+    }
+    scheduledFlows++;
     auto f = scheduleFlow();
     flows.push_back(f);
-    scheduledFlows++;
   } 
   for (auto& [src, dest]: flows) {
     EV_INFO << "Scheduled flow: " << src << " -> " << dest << "\n";

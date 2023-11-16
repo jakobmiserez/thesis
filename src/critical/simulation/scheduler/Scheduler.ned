@@ -5,6 +5,7 @@ simple Scheduler {
     parameters:
         double startTime @unit(s) = default(10s); 
         double duration @unit(s) = default(0s);
+        int maxScheduledFlows = default(-1);
 
         double interval @unit(s) = default(0.5s);
         int flowsPerInterval = default(5);
