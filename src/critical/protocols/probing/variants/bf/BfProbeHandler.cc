@@ -117,6 +117,8 @@ bool BfProbeHandler::handleAtDestination() {
     );
   }
 
+  getProtocol()->onProbeReservation(state.flow, 1);
+
   getProtocol()->onPathSignaling(state.flow);
 
   // Send confirmation packet
@@ -198,6 +200,7 @@ bool BfProbeHandler::handleProbe() {
     return true;
   }
 
+  getProtocol()->onProbeReservation(state.flow, size);
   return false;
 }
 

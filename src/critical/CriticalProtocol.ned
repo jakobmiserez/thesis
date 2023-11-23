@@ -51,12 +51,14 @@ simple CriticalProtocol {
         @signal[routeSignal](type="long");
         @signal[packetProcessingSignal](type="long");
         @signal[flowSignalingSignal](type=critical::FlowSignalingData);
+        @signal[probeReservationSignal](type=critical::ProbeReservationData);
         
         @statistic[consumption](title="consumption"; source=consumptionSignal; record=recordConsumption);
         @statistic[queueState](title="queueStates"; source=queueStateSignal; record=recordQueueState);
         @statistic[routingTime](title="routingTime"; source=routeSignal; record=vector);
         @statistic[packetProcessingTime](title="packetProcessingTime"; source=packetProcessingSignal; record=vector);
         @statistic[flowSignaling](title="flowSignaling"; source=flowSignalingSignal; record=recordFlowSignaling);
+        @statistic[probeReservation](title="probeReservation"; source=probeReservationSignal; record=recordProbeReservation);
     gates:
         input ipIn;
         output ipOut;

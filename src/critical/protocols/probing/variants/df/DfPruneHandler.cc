@@ -48,6 +48,7 @@ bool DfPruneHandler::handleMultiplexedPacket(const inet::Packet* rawPacket) {
     });
 
   if (!res.has_value()) {
+    getProtocol()->onProbeReservation(state.flow, -1);
     if (!state.isFirstHop) 
       sendPacket(PacketCreator::createFlowPrunePacket(state.flow), state.incomingInterface);
     else 
@@ -67,6 +68,8 @@ bool DfPruneHandler::handleMultiplexedPacket(const inet::Packet* rawPacket) {
     PacketCreator::createFlowProbePacket(state.probe, newParams, link.getDelay()),
     link.getInterfaceId()
   );
+
+  // Don't report reservation, we still had one
   
   return false;
 }

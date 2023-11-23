@@ -12,6 +12,8 @@ simple Scheduler {
 
         bool noTraffic = default(false);
         double noTrafficStop @unit(s) = default(0s);
+
+        int packetBurst = default(-1);
         
         @class(critical::Scheduler);
         @signal[flowConfigured](type=critical::FlowRequirements);

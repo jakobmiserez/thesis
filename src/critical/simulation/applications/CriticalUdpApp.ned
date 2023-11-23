@@ -23,6 +23,11 @@ simple CriticalUdpApp like IApp {
     bool noTraffic = default(false);
     double noTrafficStop @unit(s) = default(0s);
 
+    // Method to measure additional data for link failure scenarios
+    // If the link failure happens after X seconds, this parameter should be 
+    //double measureReroutePacketsAfter = default(0s);
+
+    // Flow Parameters
     int delay;
     int bandwidth @unit(bps);
     int burst @unit(B);

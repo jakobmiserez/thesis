@@ -29,6 +29,7 @@ void Scheduler::initialize(int stage) {
     interval = par("interval");
     flowsPerInterval = par("flowsPerInterval").intValue();
     maxScheduledFlows = par("maxScheduledFlows").intValue();
+    packetBurst = par("packetBurst").intValue();
     timer = new cMessage("Scheduler timer");
     timer->setKind(TimerKind::START);
     scheduleAt(startTime < simTime() ? simTime() : startTime, timer);
@@ -130,7 +131,13 @@ cModule* Scheduler::addUdpCriticalApplicationTo(
   app->par("delay") = params.delay;
   app->par("bandwidth") = params.rate;
   app->par("burst") = params.burst;
-  app->par("packetBurst") = getRNG(0)->intRand(4) + 1;
+  
+  // Generate random packet burst or use preconfigured for every flow
+  if (packetBurst < 0)
+    app->par("packetBurst") = getRNG(0)->intRand(4) + 1;
+  else
+    app->par("packetBurst") = packetBurst;
+
   app->par("label") = flowLabel;
   app->par("noTraffic") = par("noTraffic");
   app->par("noTrafficStop") = par("noTrafficStop");

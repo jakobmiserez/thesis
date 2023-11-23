@@ -31,6 +31,7 @@ simsignal_t CriticalProtocol::queueStateSignal = registerSignal("queueStateSigna
 simsignal_t CriticalProtocol::routeSignal = registerSignal("routeSignal");
 simsignal_t CriticalProtocol::packetProcessingSignal = registerSignal("packetProcessingSignal");
 simsignal_t CriticalProtocol::flowSignalingSignal = registerSignal("flowSignalingSignal");
+simsignal_t CriticalProtocol::probeReservationSignal = registerSignal("probeReservationSignal");
 
 
 CriticalProtocol::CriticalProtocol() {
@@ -75,12 +76,14 @@ void CriticalProtocol::initialize(int stage) {
 
 void CriticalProtocol::finish() {
   recordScalar("packetsLost", criticalPacketsLost);
+  recordScalar("dataLost", criticalDataLost);
   recordScalar("protocolPacketsSent", protocolPacketsSent);
   recordScalar("protocolBytesSent", protocolBytesSent);
   recordScalar("qosOverrides", qosOverrides);
   recordScalar("collisions", collisions);
   recordScalar("straightFails", straightFails);
   recordScalar("maxMemoryFootprint", maxMemoryFootprint);
+  recordScalar("tries", tries);
 
   for (int i = 1; i < router->numPorts(); i++) {
     const auto& port = router->getPort(i);
@@ -233,6 +236,7 @@ inet::INetfilter::IHook::Result CriticalProtocol::datagramPreRoutingHook(inet::P
 
       EV_INFO << "(CRITICAL PROTOCOL) Dropped an invalid flow packet. \n";
       criticalPacketsLost++;
+      criticalDataLost += datagram->getByteLength();
       return DROP;
     }
   } 
@@ -358,6 +362,11 @@ void CriticalProtocol::recordMemoryFootprint() {
 void CriticalProtocol::onPathSignaling(const FlowId& flowId) {
   //FlowSignalingData data(flowId);
   //emit(flowSignalingSignal, &data);
+}
+
+void CriticalProtocol::onProbeReservation(const FlowId& flowId, int reservationsDelta) {
+  ProbeReservationData data(flowId, reservationsDelta);
+  emit(probeReservationSignal, &data);
 }
 
 }

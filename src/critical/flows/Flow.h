@@ -53,7 +53,7 @@ struct FlowId {
 
   friend std::ostream& operator<<(std::ostream& os, const FlowId& flow);
 
-  std::string toIdString() {
+  std::string toIdString() const {
     std::stringstream ss;
     ss << src.str() << "|" << std::to_string(label) << "|" << dest.str();
     return ss.str();

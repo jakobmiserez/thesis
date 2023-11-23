@@ -51,22 +51,25 @@ class CriticalProtocol :
     inet::INetfilter* networkProtocol = nullptr;
     FlowTable flowTable;
     CriticalProtocolParameters params;
-    int criticalPacketsLost;
-    int protocolPacketsSent;
+    
+    uint32_t protocolPacketsSent;
+    uint32_t criticalPacketsLost;
+    uint32_t criticalDataLost;
     uint64_t protocolBytesSent;
     uint64_t maxMemoryFootprint;
-    int tries = 0;
 
     static simsignal_t consumptionSignal;
     static simsignal_t queueStateSignal;
     static simsignal_t routeSignal;
     static simsignal_t packetProcessingSignal;
     static simsignal_t flowSignalingSignal;
+    static simsignal_t probeReservationSignal;
 
   public:
-    int qosOverrides = 0;
-    int collisions = 0;
-    int straightFails = 0;
+    uint32_t qosOverrides = 0;
+    uint32_t collisions = 0;
+    uint32_t straightFails = 0;
+    uint32_t tries = 0;
 
     CriticalProtocol();
     virtual ~CriticalProtocol();
@@ -165,6 +168,11 @@ class CriticalProtocol :
      * Callback to be called when a confirmed path is being signaled into the network 
      **/
     void onPathSignaling(const FlowId& flowId);
+
+    /**
+     * Callback to be called when a probe greedily reserves resources 
+     **/
+    void onProbeReservation(const FlowId& flowId, int reservationsDelta);
 
   protected:
     virtual void initialize(int stage) override;

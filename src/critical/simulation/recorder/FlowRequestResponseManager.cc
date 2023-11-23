@@ -22,7 +22,7 @@ void FlowRequestResponseManager::init() {
     msg += rname;
     throw cRuntimeError(msg.c_str());    
   }
-  out << "source,id,requestTime,responseTime,signalingTime,accepted\n";
+  out << "source,requestTime,responseTime,signalingTime,accepted\n";
 
   outReroutes << "source,rerouteTime,rerouteAccepted\n";
 }

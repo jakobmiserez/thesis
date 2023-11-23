@@ -25,6 +25,7 @@ class Scheduler: public cSimpleModule {
     simtime_t interval;
     int maxScheduledFlows;
     int flowsPerInterval;
+    int packetBurst;
 
     std::vector<cModule*> hosts;
 

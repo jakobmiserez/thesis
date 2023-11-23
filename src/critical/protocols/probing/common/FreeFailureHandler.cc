@@ -55,6 +55,7 @@ FlowTableEntry FreeFailureHandler::deleteEntry() {
   if (router->getOldFlows().contains(flow)) {
     return router->getOldFlows().deleteFlow(flow);
   }
+  getProtocol()->onProbeReservation(flow, -1);
   return getFlowTable().deleteFlow(flow.src, flow.dest, flow.label);
 }
 

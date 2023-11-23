@@ -63,6 +63,7 @@ bool BfConfirmHandler::handleMultiplexedPacket(const inet::Packet* const rawPack
       sendPacket(PacketCreator::createFlowPrunePacket(state.flow), port);
     }
   }
+  getProtocol()->onProbeReservation(state.flow, -state.unconfirmedProbes.size());
   state.unconfirmedProbes.clear();
 
   return true;

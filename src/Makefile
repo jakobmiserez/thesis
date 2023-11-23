@@ -94,6 +94,7 @@ OBJS = \
     $O/critical/simulation/recorder/FlowSignalingRecorder.o \
     $O/critical/simulation/recorder/QueueManager.o \
     $O/critical/simulation/recorder/QueueRecorder.o \
+    $O/critical/simulation/recorder/ProbeReservationRecorder.o \
     $O/critical/simulation/scheduler/Scheduler.o \
     $O/critical/common/packet/CriticalPacketBase_m.o \
     $O/critical/common/packet/OriginalSourceTag_m.o \

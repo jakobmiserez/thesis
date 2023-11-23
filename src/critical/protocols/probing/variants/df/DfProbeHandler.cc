@@ -83,6 +83,7 @@ bool DfProbeHandler::handleAtDestination() {
     );
   }
 
+  getProtocol()->onProbeReservation(state.flow, 1);
   getProtocol()->onPathSignaling(state.flow);
 
   sendPacketBack(PacketCreator::createFlowConfirmPacket(state.flow));
@@ -118,6 +119,7 @@ bool DfProbeHandler::handleProbing() {
 
   auto link = router->getAllocationStrategy().chooseQueue(port, packetData.data, route);
   auto newParams = link.allocate(state.params);
+  getProtocol()->onProbeReservation(state.flow, 1);
   
   state.outgoingInterface = link.getInterfaceId();
   state.queue = link.getQueue();

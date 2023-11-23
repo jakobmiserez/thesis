@@ -76,6 +76,19 @@ class FlowSignalingData: public cObject {
     FlowId& getId() { return id; };
 };
 
+class ProbeReservationData: public cObject {
+  private:
+    FlowId id;
+    int reservationsDelta;
+
+  public:
+    ProbeReservationData() {};
+    ProbeReservationData(const FlowId& id, int delta): id(id), reservationsDelta(delta) {};
+
+    const FlowId& getFlowId() const { return id; };
+    int getDelta() const { return reservationsDelta; };
+};
+
 }
 
 #endif 
