@@ -33,6 +33,7 @@ void LsEmbedFailHandler::handlePacket(const inet::Packet* const rawPacket) {
     else {
       router->getTriesTable().deleteFlow(flow);
       getProtocol()->signalRoutingFailed(flow);
+      getProtocol()->inaccuracyFails++;
     }
   }
 }

@@ -32,7 +32,16 @@ class QueueLevelTopology: public Topology {
     void build(LsaDatabase& lsas, QosLsaDatabase& qos);
 
     std::optional<std::vector<const Link*>> larac(const RouterId& from, const Flow& flow, std::initializer_list<Topology::PathAccessControl<Empty>*> empties = {});
+    
+    /**
+     * Performs Dijkstra on the queue-level topology with additional access control.
+     **/
     std::optional<std::vector<const Link*>> mindelay(const RouterId& from, const Flow& flow, std::initializer_list<Topology::PathAccessControl<Empty>*> empties = {});
+
+    /**
+     * Performs Dijkstra on the queue-level topology without any access control.
+     **/
+    std::optional<std::vector<const Link*>> pureDijkstra(const RouterId& from, const Flow& flow);
 
     std::vector<const Link*> reconstructPath(const LsEmbedPacket* embedding) const;
 

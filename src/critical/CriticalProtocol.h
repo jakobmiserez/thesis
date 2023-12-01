@@ -60,7 +60,14 @@ class CriticalProtocol :
 
     static simsignal_t consumptionSignal;
     static simsignal_t queueStateSignal;
-    static simsignal_t routeSignal;
+
+    static simsignal_t routingSignal;
+    static simsignal_t routingSuccessSignal;
+    static simsignal_t routingFailSignal;
+    static simsignal_t baseRoutingSignal;
+    static simsignal_t baseRoutingSuccessSignal;
+    static simsignal_t baseRoutingFailSignal;
+
     static simsignal_t packetProcessingSignal;
     static simsignal_t flowSignalingSignal;
     static simsignal_t probeReservationSignal;
@@ -69,7 +76,9 @@ class CriticalProtocol :
     uint32_t qosOverrides = 0;
     uint32_t collisions = 0;
     uint32_t straightFails = 0;
+    uint32_t inaccuracyFails = 0;
     uint32_t tries = 0;
+    uint32_t eventBasedUpdates = 0;
 
     CriticalProtocol();
     virtual ~CriticalProtocol();

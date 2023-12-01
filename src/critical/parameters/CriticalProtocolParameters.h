@@ -53,7 +53,8 @@ enum LsAlgorithm {
 enum LsUpdateStrategy {
   TIMED,
   CONSUMPTION,
-  HYBRID
+  HYBRID,
+  HYBRID_INSTANT
 };
 
 enum ProbingVariant {
@@ -110,6 +111,7 @@ struct CriticalProtocolParameters {
   bool recordMemoryFootprint;
   bool recordQueueStates;
   bool recordConsumption;
+  bool recordBaselineRouting;
 
   // Optimization shortcuts
   bool optimizeMemoryFootprintRecording;

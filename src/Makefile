@@ -76,6 +76,7 @@ OBJS = \
     $O/critical/queueing/dnc/budget/ChameleonAllocator.o \
     $O/critical/queueing/dnc/budget/CustomAllocator.o \
     $O/critical/queueing/dnc/consumption/ConsumptionChecker.o \
+    $O/critical/queueing/dnc/consumption/HybridConsumptionChecker.o \
     $O/critical/queueing/dnc/curves/AffineArrivalCurve.o \
     $O/critical/queueing/dnc/curves/DncCurve.o \
     $O/critical/queueing/dnc/curves/RateLatencyServiceCurve.o \

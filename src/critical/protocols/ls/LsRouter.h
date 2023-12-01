@@ -51,6 +51,15 @@ class LsRouter: public MinimalLsRouter, public IConsumptionListener {
       uint64_t burst
     ) override;
 
+    virtual void startBaseRouting(
+      const inet::Ipv6Address& source, 
+      const inet::Ipv6Address& dest, 
+      uint32_t label, 
+      uint64_t delay,
+      uint64_t bandwidth,
+      uint64_t burst
+    ) override;
+
     virtual void startFreeing(
       const inet::Ipv6Address& source, 
       const inet::Ipv6Address& dest, 

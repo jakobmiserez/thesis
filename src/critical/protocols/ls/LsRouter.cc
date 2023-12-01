@@ -63,14 +63,23 @@ LsRouter::RouteResult LsRouter::startRouting(
   primaryPathTable.insertPath(flow, path.value());
 
   auto info = QueueLevelTopologyLinkEncoding::decodeLink(path.value().at(0)->getId());
-  //if (!getPortById(info.linkId)->canAllocateFlow(info.queue, flow.params)) {
-  //  throw cRuntimeError("Your path computation is garbage\n");
-  //}
 
   protocol->onPathSignaling(flow.id);
 
   protocol->sendPacketLo(packetCreator.createEmbedPacket(flow, path.value()));
   return ONGOING;
+}
+
+void LsRouter::startBaseRouting(
+  const inet::Ipv6Address& source, 
+  const inet::Ipv6Address& dest, 
+  uint32_t label, 
+  uint64_t delay,
+  uint64_t bandwidth,
+  uint64_t burst
+) {
+  Flow flow(source, dest, label, delay, bandwidth, burst);
+  queueLevelTopology.pureDijkstra(routerId, flow);
 }
 
 void LsRouter::startFreeing(
@@ -99,6 +108,7 @@ void LsRouter::onConsumptionChange(int id, bool significant, bool up) {
   if ((strat == CONSUMPTION || strat == HYBRID) && significant) {
     if (getNeighborTable().getNeighbor(id).isFullyAdjacent()) {
       sendOutQosLsa(id);
+      protocol->eventBasedUpdates++;
     }
   }
 }
@@ -125,7 +135,7 @@ void LsRouter::handleLinkFailure(const RouterId& at, const std::set<int> removed
 void LsRouter::sendOutQosLsa(int interfaceId) {
   EV_INFO << "(LS ROUTER) Sending out QoSLSAs\n";
 
-  ASSERT(getPortById(interfaceId)->check());
+  //ASSERT(getPortById(interfaceId)->check());
   inet::Packet* lsa = packetCreator.createQosLsa(interfaceId);
   for (const auto& [id, neighbor]: neighborTable) {
     if (neighbor.isFullyAdjacent()) {

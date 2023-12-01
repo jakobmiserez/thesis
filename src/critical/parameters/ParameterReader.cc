@@ -25,6 +25,7 @@ CriticalProtocolParameters ParameterReader::readParams(cModule* protocol) {
   params.recordMemoryFootprint = par("recordMemoryFootprint").boolValue();
   params.recordQueueStates = par("recordQueueStates").boolValue();
   params.recordConsumption = par("recordConsumption").boolValue();
+  params.recordBaselineRouting = par("recordBaselineRouting").boolValue();
 
   params.optimizeMemoryFootprintRecording = par("optimizeMemoryFootprintRecording").boolValue();
   params.optimizeLsas = par("optimizeLsas").boolValue();
@@ -41,7 +42,7 @@ void ParameterReader::validateParams(const CriticalProtocolParameters& params) {
     throw cRuntimeError("Invalid bw usage parameter: %f", params.protocolBwUsage);
   }
 
-  if (params.lsConsumptionThresh <= 0 || params.lsConsumptionThresh > 1.0) {
+  if (params.lsConsumptionThresh < 0 || params.lsConsumptionThresh > 1.0) {
     throw cRuntimeError("Invalid ls consumption thresh parameter: %f", params.lsConsumptionThresh);
   }
 
@@ -116,6 +117,8 @@ LsUpdateStrategy ParameterReader::getLsUpdateStrategy() {
     return LsUpdateStrategy::CONSUMPTION;
   if (strValue == "hybrid")
     return LsUpdateStrategy::HYBRID;
+  if (strValue == "hybrid-instant")
+    return LsUpdateStrategy::HYBRID_INSTANT;
   throw cRuntimeError("Unknown update strategy: %s", strValue.c_str());
 }
 

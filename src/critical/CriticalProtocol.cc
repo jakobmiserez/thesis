@@ -28,7 +28,14 @@ Define_Module(CriticalProtocol);
 const inet::Protocol CriticalProtocol::asInetProtocol("critical", "CRITICAL");
 simsignal_t CriticalProtocol::consumptionSignal = registerSignal("consumptionSignal");
 simsignal_t CriticalProtocol::queueStateSignal = registerSignal("queueStateSignal");
-simsignal_t CriticalProtocol::routeSignal = registerSignal("routeSignal");
+
+simsignal_t CriticalProtocol::routingSignal = registerSignal("routingSignal");
+simsignal_t CriticalProtocol::routingSuccessSignal = registerSignal("routingSuccessSignal");
+simsignal_t CriticalProtocol::routingFailSignal = registerSignal("routingFailSignal");
+simsignal_t CriticalProtocol::baseRoutingSignal = registerSignal("baseRoutingSignal");
+simsignal_t CriticalProtocol::baseRoutingSuccessSignal = registerSignal("baseRoutingSuccessSignal");
+simsignal_t CriticalProtocol::baseRoutingFailSignal = registerSignal("baseRoutingFailSignal");
+
 simsignal_t CriticalProtocol::packetProcessingSignal = registerSignal("packetProcessingSignal");
 simsignal_t CriticalProtocol::flowSignalingSignal = registerSignal("flowSignalingSignal");
 simsignal_t CriticalProtocol::probeReservationSignal = registerSignal("probeReservationSignal");
@@ -82,8 +89,10 @@ void CriticalProtocol::finish() {
   recordScalar("qosOverrides", qosOverrides);
   recordScalar("collisions", collisions);
   recordScalar("straightFails", straightFails);
+  recordScalar("inaccuracyFails", inaccuracyFails);
   recordScalar("maxMemoryFootprint", maxMemoryFootprint);
   recordScalar("tries", tries);
+  recordScalar("eventBasedUpdates", eventBasedUpdates);
 
   for (int i = 1; i < router->numPorts(); i++) {
     const auto& port = router->getPort(i);
@@ -277,7 +286,25 @@ void CriticalProtocol::initiateRouting(
 
   auto endTime = std::chrono::high_resolution_clock::now();
   auto duration = std::chrono::duration_cast<std::chrono::microseconds>(endTime - startTime);
-  emit(routeSignal, (long)duration.count());
+  emit(routingSignal, (long)duration.count());
+  if (res == RouterBase::RouteResult::ONGOING || res == RouterBase::RouteResult::ACCEPTED)
+    emit(routingSuccessSignal, (long)duration.count());
+  else if (res == RouterBase::RouteResult::FAILED)
+    emit(routingFailSignal, (long)duration.count());
+
+  if (params.recordBaselineRouting) {
+    // Compare with a baseline routing algorithm
+    startTime = std::chrono::high_resolution_clock::now();
+    router->startBaseRouting(source, dest, label, delay, bandwidth, burst);
+    endTime = std::chrono::high_resolution_clock::now();
+    duration = std::chrono::duration_cast<std::chrono::microseconds>(endTime - startTime);
+    emit(baseRoutingSignal, (long)duration.count());
+
+    if (res == RouterBase::RouteResult::ONGOING || res == RouterBase::RouteResult::ACCEPTED)
+      emit(baseRoutingSuccessSignal, (long)duration.count());
+    else if (res == RouterBase::RouteResult::FAILED)
+      emit(baseRoutingFailSignal, (long)duration.count());
+  }
 
   // If the flow is immediately  rejected, we can inform the listeners immediately
   if (res == RouterBase::RouteResult::FAILED) {

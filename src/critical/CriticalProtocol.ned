@@ -16,7 +16,7 @@ simple CriticalProtocol {
         bool probingFastPrune = default(false);
 
         string lsAlgorithm @enum("larac", "mindelay") = default("larac");
-        string lsUpdateStrategy @enum("timed", "consumption", "hybrid") = default("consumption");
+        string lsUpdateStrategy @enum("timed", "consumption", "hybrid", "hybrid-instant") = default("consumption");
         double lsConsumptionThresh = default(0.1);
         double lsUpdateInterval @unit(s) = default(0.025s); 
 
@@ -36,6 +36,7 @@ simple CriticalProtocol {
         bool recordMemoryFootprint = default(false);
         bool recordConsumption = default(false);
         bool recordQueueStates = default(false);
+        bool recordBaselineRouting = default(false);
 
         // Optimization shortcuts for large-scale simulations
         bool optimizeMemoryFootprintRecording = default(false);
@@ -48,14 +49,27 @@ simple CriticalProtocol {
 
         @signal[queueStateSignal](type=critical::QueueRecorderData);
         @signal[consumptionSignal](type=critical::ConsumptionRecorderData);
-        @signal[routeSignal](type="long");
         @signal[packetProcessingSignal](type="long");
         @signal[flowSignalingSignal](type=critical::FlowSignalingData);
         @signal[probeReservationSignal](type=critical::ProbeReservationData);
         
         @statistic[consumption](title="consumption"; source=consumptionSignal; record=recordConsumption);
         @statistic[queueState](title="queueStates"; source=queueStateSignal; record=recordQueueState);
-        @statistic[routingTime](title="routingTime"; source=routeSignal; record=vector);
+        
+        @signal[routingSignal](type="long");
+        @signal[routingSuccessSignal](type="long");
+        @signal[routingFailSignal](type="long");
+        @signal[baseRoutingSignal](type="long");
+        @signal[baseRoutingSuccessSignal](type="long");
+        @signal[baseRoutingFailSignal](type="long");
+
+        @statistic[routingTime](title="routingTime";                       source=routingSignal; record=vector);
+        @statistic[routingSuccessTime](title="routingSuccessTime";         source=routingSuccessSignal; record=vector);
+        @statistic[routingFailTime](title="routingFailTime";               source=routingFailSignal; record=vector);
+        @statistic[baseRoutingTime](title="baseRoutingTime";               source=baseRoutingSignal; record=vector);
+        @statistic[baseRoutingSuccessTime](title="baseRoutingSuccessTime"; source=baseRoutingSuccessSignal; record=vector);
+        @statistic[baseRoutingFailTime](title="baseRoutingFailTime";       source=baseRoutingFailSignal; record=vector);
+
         @statistic[packetProcessingTime](title="packetProcessingTime"; source=packetProcessingSignal; record=vector);
         @statistic[flowSignaling](title="flowSignaling"; source=flowSignalingSignal; record=recordFlowSignaling);
         @statistic[probeReservation](title="probeReservation"; source=probeReservationSignal; record=recordProbeReservation);

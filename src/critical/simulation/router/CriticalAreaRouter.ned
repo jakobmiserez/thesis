@@ -20,7 +20,7 @@ module CriticalAreaRouter
 
         router: CriticalRouter {
             ppp[0].ppp.queue.queue[*].dataCapacity = -1b;
-            ppp[*].ppp.queue.queue[*].dataCapacity = 97000*8b;
+            ppp[*].ppp.queue.queue[*].dataCapacity = -1b; //97000*8b;
             @display("p=368.98627,587.58");
         }
 

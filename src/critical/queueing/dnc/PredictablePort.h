@@ -9,6 +9,7 @@
 #include "critical/common/packet/CriticalPacketBase_m.h"
 #include "critical/common/util/Observable.h"
 #include "critical/queueing/dnc/consumption/ConsumptionChecker.h"
+#include "critical/queueing/dnc/consumption/HybridConsumptionChecker.h"
 
 #include <vector>
 #include <functional>
@@ -32,7 +33,7 @@ class PredictablePort
   public IFlowTableListener {
 
   private: 
-    ConsumptionChecker consumptionChecker;
+    HybridConsumptionChecker consumptionChecker;
     bool initializing = true;
 
     std::set<const FlowTableEntry*> registeredIncomingFlows;
@@ -44,7 +45,7 @@ class PredictablePort
 
     const std::set<const FlowTableEntry*> getRegisteredIncomingFlows() const { return registeredIncomingFlows; };
     const std::set<const FlowTableEntry*> getRegisteredOutgoingFlows() const { return registeredOutgoingFlows; };
-    const ConsumptionChecker& getConsumptionChecker() const { return consumptionChecker; };
+    const HybridConsumptionChecker& getConsumptionChecker() const { return consumptionChecker; };
 
     virtual void initialize(double linkRate) override;
 
