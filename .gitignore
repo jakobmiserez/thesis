@@ -3,6 +3,32 @@ out/
 .idea
 .VSCodeCounter/
 
+# Omnet++ stuff
+out/
+.settings
+.oppbuildspec
+.cproject
+.project
+.nedexclusions
+.nedfolders
+.oppfeaturestate
+.externalToolBuilders/
+
+# VS CODE
+.vscode/
+
+# Executables
+src/thesis_dbg
+src/thesis
+
+src/Makefile
+
+
+*_m.h
+*_m.cc
+
+
+
 src/protocol
 src/protocol_dbg
 
