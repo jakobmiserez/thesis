@@ -21,6 +21,7 @@ enum BudgetAllocator {
   SIMPLE1,
   SIMPLE2,
   SIMPLE3,
+  QOPT1,
   
 
 

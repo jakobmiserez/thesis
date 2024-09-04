@@ -20,8 +20,9 @@ class BudgetAllocatorFactory {
   public:
     static IBudgetAllocator* createNewAllocator(const BudgetAllocator& allocator) {
       switch (allocator) {
-        case CUSTOM:
         case CHAMELEON:
+          return new ChameleonAllocator();
+        case CUSTOM:
         case CONST1:
         case EXP:
         case GAP:
@@ -30,6 +31,7 @@ class BudgetAllocatorFactory {
         case SIMPLE1:
         case SIMPLE2:
         case SIMPLE3:
+        case QOPT1:
           return new CustomAllocator(allocator);
         //case CHAMELEON:
           //return new ChameleonAllocator();

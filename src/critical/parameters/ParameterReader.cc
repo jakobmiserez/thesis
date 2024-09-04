@@ -82,6 +82,8 @@ BudgetAllocator ParameterReader::getAllocater() {
     return BudgetAllocator::SIMPLE2;
   if (strValue == "simple3")
     return BudgetAllocator::SIMPLE3;
+  if (strValue == "qopt1")
+    return BudgetAllocator::QOPT1;
 
   if (strValue == "exp_100_100_2")
     return BudgetAllocator::EXP_DIFF_100_100_2;

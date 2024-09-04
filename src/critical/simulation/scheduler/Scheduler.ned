@@ -15,6 +15,8 @@ simple Scheduler {
 
         int packetBurst = default(-1);
         
+        bool demoMode = default(false);
+        
         @class(critical::Scheduler);
         @signal[flowConfigured](type=critical::FlowRequirements);
         @statistic[flow](title="Flow"; source=flowConfigured; record=captureFlow);

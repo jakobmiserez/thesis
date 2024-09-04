@@ -17,15 +17,17 @@ namespace critical {
 
 class Scheduler: public cSimpleModule {
   private:
-    enum TimerKind { START, SCHEDULE };
+    enum TimerKind { START, SCHEDULE, DEMO_SCHEDULE };
 
     cMessage* timer = nullptr;
+    cMessage* demoTimer = nullptr;
     simtime_t startTime;
     simtime_t duration;
     simtime_t interval;
     int maxScheduledFlows;
     int flowsPerInterval;
     int packetBurst;
+    bool demoMode;
 
     std::vector<cModule*> hosts;
 
@@ -55,6 +57,7 @@ class Scheduler: public cSimpleModule {
   private:
     void findApplicationHosts();
     void scheduleFlows();
+    void scheduleDemo();
     std::pair<std::string, std::string> scheduleFlow();
 
     void connectUdpApplication(cModule* app, cModule* host);

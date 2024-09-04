@@ -20,6 +20,7 @@ Scheduler::Scheduler() {
 
 Scheduler::~Scheduler() {
   cancelAndDelete(timer);
+  cancelAndDelete(demoTimer);
 }
 
 void Scheduler::initialize(int stage) {
@@ -30,19 +31,28 @@ void Scheduler::initialize(int stage) {
     flowsPerInterval = par("flowsPerInterval").intValue();
     maxScheduledFlows = par("maxScheduledFlows").intValue();
     packetBurst = par("packetBurst").intValue();
+    demoMode = par("demoMode").boolValue();
     timer = new cMessage("Scheduler timer");
     timer->setKind(TimerKind::START);
+    demoTimer = new cMessage("Demo timer");
+    demoTimer->setKind(TimerKind::DEMO_SCHEDULE);
     scheduleAt(startTime < simTime() ? simTime() : startTime, timer);
+    if (demoMode) {
+      scheduleAt(simTime() + SimTime(200, SimTimeUnit::SIMTIME_S), demoTimer);
+    }
   }
 }
 
 void Scheduler::handleMessage(cMessage* msg) {
-  if (msg == timer) {
+  if (msg == timer || msg == demoTimer) {
     switch (msg->getKind()) {
       case TimerKind::START: {
         findApplicationHosts();
         timer->setKind(TimerKind::SCHEDULE);
         scheduleAt(simTime() + computeInterval(), timer);
+      } break;
+      case TimerKind::DEMO_SCHEDULE: {
+        scheduleDemo();
       } break;
       case TimerKind::SCHEDULE:
       default: {
@@ -51,6 +61,7 @@ void Scheduler::handleMessage(cMessage* msg) {
           scheduleAt(simTime() + computeInterval(), timer);
         }
       } break;
+      
     }
   }
 }
@@ -63,7 +74,7 @@ void Scheduler::scheduleFlows() {
   std::vector<std::pair<std::string,std::string>> flows;
   flows.reserve(flowsPerInterval);
   for (int i = 0; i < flowsPerInterval; i++) {
-    if (maxScheduledFlows > 0 && scheduledFlows > maxScheduledFlows) {
+    if (maxScheduledFlows > 0 && scheduledFlows >= maxScheduledFlows) {
       continue;
     }
     scheduledFlows++;
@@ -207,6 +218,47 @@ void Scheduler::findApplicationHosts() {
       hosts.push_back(mod);
     }
   }
+}
+
+void Scheduler::scheduleDemo() {
+  cModule* madrid = nullptr;
+  int m = 0;
+  cModule* copenhagen = nullptr;
+  int c = 0;
+
+  int i = 0;
+  for (cModule* mod: hosts) {
+    cModule* parent = mod->getParentModule();
+    std::string name = parent->getName();
+    if (name == "Madrid") {
+      madrid = mod;
+      m = i;
+    }
+    else if (name == "Copenhagen") {
+      copenhagen = mod;
+      c = i;
+    }
+    i++;
+  }
+  if (madrid == nullptr || copenhagen == nullptr) {
+    throw cRuntimeError("Unable to find routers Madrid and Copenhagen");
+  }
+
+  uint16_t sinkUdpPort = numUdpApps[copenhagen]++ + udpAppOffset;
+  uint16_t appUdpPort = numUdpApps[madrid]++ + udpAppOffset;
+  uint32_t flowLabel = ++flowLabels[indexOf(m, c)];
+  
+  FlowParameters params = appGen.generateParameters(getRNG(0));
+  cModule* source = addUdpCriticalApplicationTo(
+    madrid, madrid->getParentModule()->getSubmodule("router"), appUdpPort, 
+    copenhagen, sinkUdpPort, flowLabel, params
+  );
+  cModule* sink = addUdpSinkTo(copenhagen, sinkUdpPort);
+
+  FlowRequirements req(params, source, sink);
+  emit(flowConfiguredSignal, &req);
+
+  EV_INFO << "DONE!\n";
 }
 
 }

@@ -19,46 +19,46 @@ network NSFNET
 
     submodules:
         scenarioManager: ScenarioManager {};
-        r1: CriticalAreaRouter {
+        r0: CriticalAreaRouter {
             @display("p=82,122");
         }
-        r2: CriticalAreaRouter {
+        r1: CriticalAreaRouter {
             @display("p=26,243");
         }
-        r3: CriticalAreaRouter {
+        r2: CriticalAreaRouter {
             @display("p=82,372");
         }
-        r4: CriticalAreaRouter {
+        r3: CriticalAreaRouter {
             @display("p=165,217");
         }
-        r5: CriticalAreaRouter {
+        r4: CriticalAreaRouter {
             @display("p=289,271");
         }
-        r6: CriticalAreaRouter {
+        r5: CriticalAreaRouter {
             @display("p=354,420");
         }
-        r7: CriticalAreaRouter {
+        r6: CriticalAreaRouter {
             @display("p=384,217");
         }
-        r8: CriticalAreaRouter {
+        r7: CriticalAreaRouter {
             @display("p=474,178");
         }
-        r9: CriticalAreaRouter {
+        r8: CriticalAreaRouter {
             @display("p=572,178");
         }
-        r10: CriticalAreaRouter {
+        r9: CriticalAreaRouter {
             @display("p=548,420");
         }
-        r11: CriticalAreaRouter {
+        r10: CriticalAreaRouter {
             @display("p=493,83");
         }
-        r12: CriticalAreaRouter {
+        r11: CriticalAreaRouter {
             @display("p=653,101");
         }
-        r13: CriticalAreaRouter {
+        r12: CriticalAreaRouter {
             @display("p=679,297");
         }
-        r14: CriticalAreaRouter {
+        r13: CriticalAreaRouter {
             @display("p=747,190");
         }
 
@@ -71,26 +71,26 @@ network NSFNET
             @display("p=786,110");
         }
     connections:
-        r1.pppg++ <--> fiberline {  distance = 1100km; } <--> r2.pppg++;
-        r1.pppg++ <--> fiberline {  distance = 1600km; } <--> r3.pppg++;
-        r1.pppg++ <--> fiberline {  distance = 2800km; } <--> r8.pppg++;
-        r2.pppg++ <--> fiberline {  distance = 600   km; } <--> r3.pppg++;
-        r2.pppg++ <--> fiberline {  distance = 1000km; } <--> r4.pppg++;
-        r3.pppg++ <--> fiberline {  distance = 2000km; } <--> r6.pppg++;
-        r4.pppg++ <--> fiberline {  distance = 600  km; } <--> r5.pppg++;
-        r4.pppg++ <--> fiberline {  distance = 2400km; } <--> r11.pppg++;
-        r5.pppg++ <--> fiberline {  distance = 1100km; } <--> r6.pppg++;
-        r5.pppg++ <--> fiberline {  distance = 800  km; } <--> r7.pppg++;
-        r6.pppg++ <--> fiberline {  distance = 1200km; } <--> r10.pppg++;
-        r6.pppg++ <--> fiberline {  distance = 2000km; } <--> r13.pppg++;
+        r0.pppg++ <--> fiberline {  distance = 1100km; } <--> r1.pppg++;
+        r0.pppg++ <--> fiberline {  distance = 1600km; } <--> r2.pppg++;
+        r0.pppg++ <--> fiberline {  distance = 2800km; } <--> r7.pppg++;
+        r1.pppg++ <--> fiberline {  distance = 600   km; } <--> r2.pppg++;
+        r1.pppg++ <--> fiberline {  distance = 1000km; } <--> r3.pppg++;
+        r2.pppg++ <--> fiberline {  distance = 2000km; } <--> r5.pppg++;
+        r3.pppg++ <--> fiberline {  distance = 600  km; } <--> r4.pppg++;
+        r3.pppg++ <--> fiberline {  distance = 2400km; } <--> r10.pppg++;
+        r4.pppg++ <--> fiberline {  distance = 1100km; } <--> r5.pppg++;
+        r4.pppg++ <--> fiberline {  distance = 800  km; } <--> r6.pppg++;
+        r5.pppg++ <--> fiberline {  distance = 1200km; } <--> r9.pppg++;
+        r5.pppg++ <--> fiberline {  distance = 2000km; } <--> r12.pppg++;
+        r6.pppg++ <--> fiberline {  distance = 700  km; } <--> r7.pppg++;
         r7.pppg++ <--> fiberline {  distance = 700  km; } <--> r8.pppg++;
-        r8.pppg++ <--> fiberline {  distance = 700  km; } <--> r9.pppg++;
-        r9.pppg++ <--> fiberline {  distance = 900  km; } <--> r10.pppg++;
-        r9.pppg++ <--> fiberline {  distance = 500  km; } <--> r12.pppg++;
-        r9.pppg++ <--> fiberline {  distance = 500  km; } <--> r14.pppg++;
-        r11.pppg++ <--> fiberline {  distance = 800  km; } <--> r12.pppg++;
-        r11.pppg++ <--> fiberline {  distance = 800  km; } <--> r14.pppg++;
+        r8.pppg++ <--> fiberline {  distance = 900  km; } <--> r9.pppg++;
+        r8.pppg++ <--> fiberline {  distance = 500  km; } <--> r11.pppg++;
+        r8.pppg++ <--> fiberline {  distance = 500  km; } <--> r13.pppg++;
+        r10.pppg++ <--> fiberline {  distance = 800  km; } <--> r11.pppg++;
+        r10.pppg++ <--> fiberline {  distance = 800  km; } <--> r13.pppg++;
+        r11.pppg++ <--> fiberline {  distance = 300  km; } <--> r12.pppg++;
         r12.pppg++ <--> fiberline {  distance = 300  km; } <--> r13.pppg++;
-        r13.pppg++ <--> fiberline {  distance = 300  km; } <--> r14.pppg++;
 }
 

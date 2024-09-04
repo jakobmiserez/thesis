@@ -64,6 +64,9 @@ void SimplePredictablePort::initialize(double linkRate) {
   // Allocate protocol resources
   uint64_t protocolLinkRate = ceil(linkRate * protocolParams.protocolBwUsage);
   FlowParameters params(0, protocolLinkRate, protocolParams.protocolBurstUsage);
+  if (params.burst <= 0 || params.rate <= 0)
+    return;
+
   int failedQueue = -1;
   if (!canAllocateFlow(protocolParams.protocolQueue, params, &failedQueue)) {
     std::string message = "Cannot allocate protocol resources without violating the queue budgets of queue ";

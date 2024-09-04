@@ -6,7 +6,7 @@ using namespace omnetpp;
 
 namespace critical {
 
-const uint64_t ChameleonAllocator::budgets2[2] = { 100, 6000 };
+const uint64_t ChameleonAllocator::budgets2[2] = { 500, 3000 };
 const uint64_t ChameleonAllocator::budgets4[4] = { 100, 1000, 6000, 24000 };
 const uint64_t ChameleonAllocator::budgets8[8] = { 100, 500,  1000, 1500, 3000, 6000, 12000, 24000 };
 

@@ -100,14 +100,14 @@ inet::Packet* PacketCreator::createQosLsa(int interfaceId) {
 
   lsa->setChunkLength(lsa->getChunkLength() + inet::B(16 * port->getNumQueues()));
   
-  return wrap(lsa, "qos-lsa");
+  return wrap(lsa, "LSA");
 }
 
 inet::Packet* PacketCreator::dupQosLsa(const QosLsaPacket* qosLsaPacket) {
   inet::Ptr<QosLsaPacket> lsa = inet::makeShared<QosLsaPacket>();
   *lsa = *qosLsaPacket;
 
-  return wrap(lsa, "qos-lsa");
+  return wrap(lsa, "LSA");
 }
 
 inet::Packet* PacketCreator::createEmbedPacket(const Flow& flow, const std::vector<const Topology::Link*>& path) {
@@ -122,7 +122,7 @@ inet::Packet* PacketCreator::createEmbedPacket(const Flow& flow, const std::vect
 
   fe->setChunkLength(fe->getChunkLength() + inet::B(4 * path.size()));
   
-  return wrap(fe, "Flow embed");
+  return wrap(fe, "ROUTE-INSTALL");
 }
 
 inet::Packet* PacketCreator::updateEmbedPacket(const LsEmbedPacket* flowEmbedPacket, const FlowParameters& updatedParams) {
@@ -138,20 +138,20 @@ inet::Packet* PacketCreator::updateEmbedPacket(const LsEmbedPacket* flowEmbedPac
     fe->setPath(i, flowEmbedPacket->getPath(i));
   }
   fe->setChunkLength(fe->getChunkLength() + inet::B(entries * 4));
-  return wrap(fe, "Flow embed");
+  return wrap(fe, "ROUTE-INSTALL");
 }
 
 inet::Packet* PacketCreator::createEmbedConfirmPacket(const FlowId& flow) {
   auto packet = inet::makeShared<LsEmbedConfirmPacket>();
   packet->setFlow(flow);
-  return wrap(packet, "Flow embed confirm");
+  return wrap(packet, "ROUTE-CONFIRM");
 }
 
 inet::Packet* PacketCreator::createEmbedFailPacket(const FlowId& flow) {
   auto packet = inet::makeShared<LsEmbedFailPacket>();
   packet->setRouterId(router->getRouterId());
   packet->setFlow(flow);
-  return wrap(packet, "Flow embed fail");
+  return wrap(packet, "ROUTE-INSTALL-FAIL");
 }
 
 uint32_t PacketCreator::getNextLsaSequenceNumber() {
