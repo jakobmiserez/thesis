@@ -32,6 +32,11 @@ class BudgetAllocatorFactory {
         case SIMPLE2:
         case SIMPLE3:
         case QOPT1:
+        case QOPTDISTRANDOM:
+        case QOPTDISTVIDEO40:
+        case QOPTDISTVIDEO60:
+        case QOPTDISTVIDEO80:
+        case QOPTDISTVIDEO100:
           return new CustomAllocator(allocator);
         //case CHAMELEON:
           //return new ChameleonAllocator();

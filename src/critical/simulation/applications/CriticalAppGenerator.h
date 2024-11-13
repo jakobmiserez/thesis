@@ -44,6 +44,54 @@ class Application {
 
 class CriticalAppGenerator {
   public:
+    enum AppDistribution {
+      RANDOM = 0,
+      VIDEO_40,
+      VIDEO_60,
+      VIDEO_80,
+      VIDEO_100,
+      DB_40,
+      DB_60,
+      DB_80,
+      DB_100,
+      PROD_40,
+      PROD_60,
+      PROD_80,
+      PROD_100,
+
+      APP_DISTRIBUTION_COUNT
+    };
+
+    static AppDistribution parseAppDistribution(const std::string& appDistributionStr) {
+      if (appDistributionStr == "random")
+        return RANDOM;
+      if (appDistributionStr == "video40")
+        return VIDEO_40;
+      if (appDistributionStr == "video60")
+        return VIDEO_60;
+      if (appDistributionStr == "video80")
+        return VIDEO_80;
+      if (appDistributionStr == "video100")
+        return VIDEO_100;
+      if (appDistributionStr == "db40")
+        return DB_40;
+      if (appDistributionStr == "db60")
+        return DB_60;
+      if (appDistributionStr == "db80")
+        return DB_80;
+      if (appDistributionStr == "db100")
+        return DB_100;
+      if (appDistributionStr == "prod40")
+        return PROD_40;
+      if (appDistributionStr == "prod60")
+        return PROD_60;
+      if (appDistributionStr == "prod80")
+        return PROD_80;
+      if (appDistributionStr == "prod100")
+        return PROD_100;
+      throw omnetpp::cRuntimeError("Unknown AppDistribution: %s", appDistributionStr.c_str());
+    }
+
     static const Application database;
     static const Application scada;
     static const Application production;
@@ -53,10 +101,26 @@ class CriticalAppGenerator {
     static const Application other;
 
     static const std::vector<const Application*> apps;
+    
+    static const std::array<std::array<uint8_t, 5>, APP_DISTRIBUTION_COUNT> distributionWeights;
       
 
   public:
-    FlowParameters generateParameters(cRNG* rng);   
+    CriticalAppGenerator();
+
+    void setAppDistribution(AppDistribution appDistribution) {
+      this->appDistribution = appDistribution;
+      setupHistogram();
+    };
+
+    FlowParameters generateParameters(cRNG* rng);
+
+  private:
+    void setupHistogram();
+
+  private:
+    AppDistribution appDistribution;
+    omnetpp::cHistogram histogram;
 };
 
 }

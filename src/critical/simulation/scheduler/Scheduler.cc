@@ -40,6 +40,8 @@ void Scheduler::initialize(int stage) {
     if (demoMode) {
       scheduleAt(simTime() + SimTime(200, SimTimeUnit::SIMTIME_S), demoTimer);
     }
+    appDistribution = CriticalAppGenerator::parseAppDistribution(par("appDistribution").stdstringValue());
+    appGen.setAppDistribution(appDistribution);
   }
 }
 

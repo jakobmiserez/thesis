@@ -30,6 +30,7 @@ class Scheduler: public cSimpleModule {
     bool demoMode;
 
     std::vector<cModule*> hosts;
+    CriticalAppGenerator::AppDistribution appDistribution;
 
     // Map that keeps track of the number of udp applications of every host
     std::map<cModule*, uint16_t> numUdpApps;

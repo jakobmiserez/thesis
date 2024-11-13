@@ -84,6 +84,16 @@ BudgetAllocator ParameterReader::getAllocater() {
     return BudgetAllocator::SIMPLE3;
   if (strValue == "qopt1")
     return BudgetAllocator::QOPT1;
+  if (strValue == "qoptdistrandom")
+    return BudgetAllocator::QOPTDISTRANDOM;
+  if (strValue == "qoptdistvideo40")
+    return BudgetAllocator::QOPTDISTVIDEO40;
+  if (strValue == "qoptdistvideo60")
+    return BudgetAllocator::QOPTDISTVIDEO60;
+  if (strValue == "qoptdistvideo80") 
+    return BudgetAllocator::QOPTDISTVIDEO80;
+  if (strValue == "qoptdistvideo100")
+    return BudgetAllocator::QOPTDISTVIDEO100;
 
   if (strValue == "exp_100_100_2")
     return BudgetAllocator::EXP_DIFF_100_100_2;

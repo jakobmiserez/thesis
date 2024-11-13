@@ -11,7 +11,7 @@ class CustomAllocator: public IBudgetAllocator {
 
   private:
     BudgetAllocator custom;
-    static const uint64_t budgets2[11][2];
+    static const uint64_t budgets2[16][2];
     static const uint64_t budgets4[11][4];
     static const uint64_t budgets8[11][8];
 

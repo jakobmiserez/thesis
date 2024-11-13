@@ -16,6 +16,13 @@ simple Scheduler {
         int packetBurst = default(-1);
         
         bool demoMode = default(false);
+
+        string appDistribution @enum(
+            "random", 
+            "video40", "video60", "video80", "video100", 
+            "db40", "db60", "db80", "db100", 
+            "prod40", "prod60", "prod80", "prod100"
+        ) = default("random");
         
         @class(critical::Scheduler);
         @signal[flowConfigured](type=critical::FlowRequirements);

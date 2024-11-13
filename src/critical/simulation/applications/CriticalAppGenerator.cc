@@ -20,8 +20,45 @@ const std::vector<const Application*> CriticalAppGenerator::apps =  {
   //&other
 };
 
+const std::array<std::array<uint8_t, 5>, CriticalAppGenerator::APP_DISTRIBUTION_COUNT> CriticalAppGenerator::distributionWeights = {{
+  { 20, 20, 20, 20, 20 }, // RANDOM
+  { 15, 15, 15, 15, 40 }, // VIDEO_40
+  { 10, 10, 10, 10, 60 }, // VIDEO_60
+  { 5, 5, 5, 5, 80 },     // VIDEO_80
+  { 0, 0, 0, 0, 100},     // VIDEO_100
+  { 40, 15, 15, 15, 15 }, // DB_40
+  { 60, 10, 10, 10, 10 }, // DB_60
+  { 80, 5, 5, 5, 5 },     // DB_80
+  { 100, 0, 0, 0, 0},     // DB_100
+  { 15, 15, 40, 15, 15 }, // PROD_40
+  { 10, 10, 60, 10, 10 }, // PROD_60
+  { 5, 5, 80, 5, 5 },     // PROD_80
+  { 0, 0, 100, 0, 0},     // PROD_100
+}};
+
+CriticalAppGenerator::CriticalAppGenerator(): histogram("appDistributionHistogram") {
+  histogram.setRange(0, apps.size());
+  histogram.setNumBinsHint(apps.size());
+  histogram.setMode(cHistogram::MODE_INTEGERS);
+}
+
+void CriticalAppGenerator::setupHistogram() {
+  const auto& appWeight = distributionWeights[appDistribution];
+
+  for (size_t i = 0; i < appWeight.size(); i++) {
+    for (uint8_t j = 0; j < appWeight[i]; j++) {
+      histogram.collect(i);
+    }
+    //histogram.collectWeighted(i, appWeight[i]);
+  }
+}
+
 FlowParameters CriticalAppGenerator::generateParameters(cRNG* rng) {
-  unsigned long category = rng->intRand(apps.size());
+
+  histogram.setRNG(rng);
+  unsigned long category = histogram.draw();
+
+  //unsigned long category = rng->intRand(apps.size());
   return apps[category]->generateParams(rng);
 };   
 
