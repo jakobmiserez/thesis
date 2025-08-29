@@ -1,6 +1,7 @@
 #ifndef _CRITICAL_LS_PATHTABLE_H
 #define _CRITICAL_LS_PATHTABLE_H
 
+#include "critical/common/util/Parameterizable.h"
 #include "critical/flows/Flow.h"
 #include "critical/flows/map/linear/LinearFlowMap.h"
 #include "critical/common/util/Util.h"
@@ -22,7 +23,7 @@ namespace ls {
  * by scattering the path and bundling common links together. 
  * 
  */
-class PathTable: public NonCopyable {
+class PathTable: public NonCopyable, public Parameterizable {
   private:
     struct FlowData;
     
@@ -34,6 +35,10 @@ class PathTable: public NonCopyable {
       BundledLinks(const RouterId& routerId, int linkId): routerId(routerId), linkId(linkId) {};
 
       bool isEmpty() { return entries.empty(); }
+
+      uint64_t estimateMemoryFootprint() const {
+        return entries.size() * sizeof(FlowMapEntry<FlowData>*);
+      }
     };
 
     struct FlowData {
@@ -44,8 +49,10 @@ class PathTable: public NonCopyable {
   private:
     LinearFlowMap<FlowData> flowMap;
     std::map<RouterId, std::unordered_map<int, BundledLinks*>> table;
+    LinearFlowMap<int> optimizedData;
 
   public:
+    PathTable(CriticalProtocol* protocol);
     virtual ~PathTable();
 
     /**
@@ -79,12 +86,28 @@ class PathTable: public NonCopyable {
      */
     std::vector<Flow> removeAllGoingThrough(const RouterId& routerId, int linkId);
 
+    uint64_t estimateMemoryFootprint() const {
+      uint64_t bytes = flowMapEntries * sizeof(FlowMapEntry<FlowData>);
+      bytes += tableEntries * sizeof(FlowMapEntry<FlowData>*);
+      //uint64_t bytes = flowMap.size() * sizeof(FlowMapEntry<FlowData>);
+      //for (const auto& [_, entries]: table) {
+      //  for (const auto& entry: entries) {
+      //    bytes += entry.second->estimateMemoryFootprint();
+      //  }
+      //}
+      return bytes;
+    }
+
   private:
     BundledLinks* findOrCreateZippedLink(const RouterId& routerId, int linkId);
 
     void eraseAndClean(BundledLinks*& bundle);
 
     bool contains(const RouterId& routerId, int linkId);
+
+  private:
+    uint64_t flowMapEntries = 0;
+    uint64_t tableEntries = 0;
 
 };
 

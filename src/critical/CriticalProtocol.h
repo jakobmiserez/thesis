@@ -41,6 +41,7 @@ class CriticalProtocol :
 
   private: 
     cMessage* startUp = nullptr;
+    cMessage* memoryTimer = nullptr;
     cModule* host = nullptr;
     std::map<cMessage*, inet::Packet*> delayQueue;
 
@@ -50,16 +51,34 @@ class CriticalProtocol :
     inet::INetfilter* networkProtocol = nullptr;
     FlowTable flowTable;
     CriticalProtocolParameters params;
-    int criticalPacketsLost;
-    int protocolPacketsSent;
+    
+    uint32_t protocolPacketsSent;
+    uint32_t criticalPacketsLost;
+    uint32_t criticalDataLost;
+    uint64_t protocolBytesSent;
+    uint64_t maxMemoryFootprint;
 
     static simsignal_t consumptionSignal;
     static simsignal_t queueStateSignal;
 
+    static simsignal_t routingSignal;
+    static simsignal_t routingSuccessSignal;
+    static simsignal_t routingFailSignal;
+    static simsignal_t baseRoutingSignal;
+    static simsignal_t baseRoutingSuccessSignal;
+    static simsignal_t baseRoutingFailSignal;
+
+    static simsignal_t packetProcessingSignal;
+    static simsignal_t flowSignalingSignal;
+    static simsignal_t probeReservationSignal;
+
   public:
-    int qosOverrides = 0;
-    int collisions = 0;
-    int straightFails = 0;
+    uint32_t qosOverrides = 0;
+    uint32_t collisions = 0;
+    uint32_t straightFails = 0;
+    uint32_t inaccuracyFails = 0;
+    uint32_t tries = 0;
+    uint32_t eventBasedUpdates = 0;
 
     CriticalProtocol();
     virtual ~CriticalProtocol();
@@ -154,6 +173,16 @@ class CriticalProtocol :
 
     virtual void onConsumptionChange(int id, bool significant, bool up) override;
 
+    /**
+     * Callback to be called when a confirmed path is being signaled into the network 
+     **/
+    void onPathSignaling(const FlowId& flowId);
+
+    /**
+     * Callback to be called when a probe greedily reserves resources 
+     **/
+    void onProbeReservation(const FlowId& flowId, int reservationsDelta);
+
   protected:
     virtual void initialize(int stage) override;
     
@@ -178,6 +207,9 @@ class CriticalProtocol :
     virtual void handleStartOperation(inet::LifecycleOperation* operation) override;
     virtual void handleStopOperation(inet::LifecycleOperation* operation) override;
     virtual void handleCrashOperation(inet::LifecycleOperation* operation) override;
+
+  private:
+    void recordMemoryFootprint();
 
   private:
     RouterBase* createRouter();

@@ -104,6 +104,19 @@ class RouterBase: public Parameterizable, public IFailureHandler {
     ) = 0;
 
     /**
+     * Runs a routing algorithm that can be used as baseline to compare with the real routing algorithm. Does nothing by default.
+     * Can be overriden by e.g., a link-state router to compare with standard Dijkstra.
+     **/
+    virtual void startBaseRouting(
+      const inet::Ipv6Address& source, 
+      const inet::Ipv6Address& dest, 
+      uint32_t label, 
+      uint64_t delay,
+      uint64_t bandwidth,
+      uint64_t burst
+    ) {};
+
+    /**
      * @brief Starts the process to free the flow
      * 
      * @param source 
@@ -169,7 +182,9 @@ class RouterBase: public Parameterizable, public IFailureHandler {
      */
     void reroute(const FlowId& flow, const FlowParameters& params);
     void reroute(const Flow& flow) { reroute(flow.id, flow.params); };
-  
+
+    virtual uint64_t estimateMemoryFootprint() const = 0;
+    
   protected:
     /**
      * @brief Create the message handler for this router.

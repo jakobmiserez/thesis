@@ -90,4 +90,9 @@ int LinearFlowMap<T>::indexOf(const FlowId& flow) const {
   return i;
 }
 
+template <class T>
+size_t LinearFlowMap<T>::size() const {
+  return entries.size();
+}
+
 }

@@ -42,6 +42,7 @@ bool BfPruneHandler::handleMultiplexedPacket(const inet::Packet* const rawPacket
   int queue = state.unconfirmedProbes.at(packetData.sourceInterface);
   router->getPortById(packetData.sourceInterface)->freeFlow(queue, state.params);
   state.unconfirmedProbes.erase(packetData.sourceInterface);
+  getProtocol()->onProbeReservation(state.flow, -1);
 
   EV_INFO << "(BF PRUNE HANDLER) Still having " << state.unconfirmedProbes.size() << " unconfirmed probes\n";
   
@@ -87,6 +88,8 @@ bool BfPruneHandler::handleFastPrune() {
     EV_INFO << "(BF PRUNE HANDLER) Sending upstream prune to " << port << "\n";
     sendPacket(PacketCreator::createFlowPrunePacket(state.flow), port);
   }
+
+  getProtocol()->onProbeReservation(state.flow, -state.unconfirmedProbes.size());
   state.unconfirmedProbes.clear();
 
   return true;

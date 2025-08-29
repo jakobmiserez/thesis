@@ -3,6 +3,7 @@
 
 #include <inet/networklayer/common/L3Address.h>
 #include <inet/networklayer/common/L3AddressResolver.h>
+#include <sstream>
 
 #include "critical/queueing/dnc/curves/AffineArrivalCurve.h"
 
@@ -29,11 +30,34 @@ struct FlowId {
     return label == other.label && src == other.src && dest == other.dest;
   };
 
+  bool operator<(const FlowId& other) const {
+    if (label < other.label)
+      return true;
+    if (label > other.label)
+      return false;
+    int cmp = src.compare(other.src);
+    if (cmp < 0)
+      return true;
+    if (cmp > 0)
+      return false;
+
+    cmp = dest.compare(other.dest);
+    if (cmp < 0)
+      return true;
+    return false;
+  };
+
   bool operator!=(const FlowId& other) const {
     return !operator==(other);
   };
 
   friend std::ostream& operator<<(std::ostream& os, const FlowId& flow);
+
+  std::string toIdString() const {
+    std::stringstream ss;
+    ss << src.str() << "|" << std::to_string(label) << "|" << dest.str();
+    return ss.str();
+  }
 };
 
 inline std::ostream& operator<<(std::ostream& os, const FlowId& flow) {

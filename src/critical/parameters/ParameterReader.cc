@@ -22,6 +22,17 @@ CriticalProtocolParameters ParameterReader::readParams(cModule* protocol) {
   params.lsConsumptionThresh = par("lsConsumptionThresh").doubleValue();
   params.lsUpdateInterval = par("lsUpdateInterval").doubleValue();
 
+  params.recordMemoryFootprint = par("recordMemoryFootprint").boolValue();
+  params.recordQueueStates = par("recordQueueStates").boolValue();
+  params.recordConsumption = par("recordConsumption").boolValue();
+  params.recordBaselineRouting = par("recordBaselineRouting").boolValue();
+
+  params.optimizeMemoryFootprintRecording = par("optimizeMemoryFootprintRecording").boolValue();
+  params.optimizeLsas = par("optimizeLsas").boolValue();
+  params.optimizePathTables = par("optimizePathTables").boolValue();
+
+  params.countPacketStatsAfter = par("countPacketStatsAfter").doubleValue();
+
   validateParams(params);
   return params;
 }
@@ -31,7 +42,7 @@ void ParameterReader::validateParams(const CriticalProtocolParameters& params) {
     throw cRuntimeError("Invalid bw usage parameter: %f", params.protocolBwUsage);
   }
 
-  if (params.lsConsumptionThresh <= 0 || params.lsConsumptionThresh > 1.0) {
+  if (params.lsConsumptionThresh < 0 || params.lsConsumptionThresh > 1.0) {
     throw cRuntimeError("Invalid ls consumption thresh parameter: %f", params.lsConsumptionThresh);
   }
 
@@ -55,6 +66,49 @@ BudgetAllocator ParameterReader::getAllocater() {
     return BudgetAllocator::CHAMELEON;
   if (strValue == "custom")
     return BudgetAllocator::CUSTOM;
+  if (strValue == "const1")
+    return BudgetAllocator::CONST1;
+  if (strValue == "exp")
+    return BudgetAllocator::EXP;
+  if (strValue == "gap")
+    return BudgetAllocator::GAP;
+  if (strValue == "increasing1")
+    return BudgetAllocator::INCREASING1;
+  if (strValue == "increasing2")
+    return BudgetAllocator::INCREASING2;
+  if (strValue == "simple1")
+    return BudgetAllocator::SIMPLE1;
+  if (strValue == "simple2")
+    return BudgetAllocator::SIMPLE2;
+  if (strValue == "simple3")
+    return BudgetAllocator::SIMPLE3;
+  if (strValue == "qopt1")
+    return BudgetAllocator::QOPT1;
+  if (strValue == "qoptdistrandom")
+    return BudgetAllocator::QOPTDISTRANDOM;
+  if (strValue == "qoptdistvideo40")
+    return BudgetAllocator::QOPTDISTVIDEO40;
+  if (strValue == "qoptdistvideo60")
+    return BudgetAllocator::QOPTDISTVIDEO60;
+  if (strValue == "qoptdistvideo80") 
+    return BudgetAllocator::QOPTDISTVIDEO80;
+  if (strValue == "qoptdistvideo100")
+    return BudgetAllocator::QOPTDISTVIDEO100;
+
+  if (strValue == "exp_100_100_2")
+    return BudgetAllocator::EXP_DIFF_100_100_2;
+  if (strValue == "lin_100_200_100")
+    return BudgetAllocator::LINEAR_DIFF_100_200_100;
+  if (strValue == "lin_100_400_200")
+    return BudgetAllocator::LINEAR_DIFF_100_400_200;
+  
+  if (strValue == "const_100_500")
+    return BudgetAllocator::CONSTANT_DIFF_100_500;
+  if (strValue == "const_500_500")
+    return BudgetAllocator::CONSTANT_DIFF_500_500;
+  if (strValue == "const_500_0")
+    return BudgetAllocator::CONSTANT_DIFF_500_0;
+
   throw cRuntimeError("Unknown allocator strategy: %s", strValue.c_str());
 }
     
@@ -75,6 +129,8 @@ LsUpdateStrategy ParameterReader::getLsUpdateStrategy() {
     return LsUpdateStrategy::CONSUMPTION;
   if (strValue == "hybrid")
     return LsUpdateStrategy::HYBRID;
+  if (strValue == "hybrid-instant")
+    return LsUpdateStrategy::HYBRID_INSTANT;
   throw cRuntimeError("Unknown update strategy: %s", strValue.c_str());
 }
 

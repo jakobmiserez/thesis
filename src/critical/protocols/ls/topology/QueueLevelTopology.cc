@@ -97,6 +97,17 @@ std::optional<std::vector<const Topology::Link*>> QueueLevelTopology::mindelay(c
   return {};
 }
 
+std::optional<std::vector<const Topology::Link*>> QueueLevelTopology::pureDijkstra(const RouterId& from, const Flow& flow) {
+  Node* node = getNodeWithId(from);
+  Node* dest = getDestinationNode(flow.id.dest);
+  computeDistance(node, dest);
+
+  if (dest->isReachable() && dest->getData().originalMetric <= flow.params.delay) {
+    return getPath();
+  }
+  return {};
+}
+
 std::vector<const Topology::Link*> QueueLevelTopology::reconstructPath(const LsEmbedPacket* embedding) const {
   std::vector<const Link*> res;
   res.reserve(embedding->getPathArraySize());

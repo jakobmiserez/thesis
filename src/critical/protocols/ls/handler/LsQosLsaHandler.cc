@@ -42,12 +42,22 @@ void LsQosLsaHandler::handleTimer(cMessage* timer) {
   for (const auto& port: router->getPorts()) {
     router->sendOutQosLsa(port.getId());
   }
-  tparent->startTimer(timer, getProtocol()->getParams().lsUpdateInterval);
+  double updateInterval = getProtocol()->getParams().lsUpdateInterval;
+  if (simTime() + updateInterval > SimTime(200, SimTimeUnit::SIMTIME_S)) {
+      std::string name = pparent->getProtocol()->getParentModule()->getParentModule()->getName();
+      if (name == "Paris") {
+        tparent->startTimer(timer, updateInterval);
+      }
+    }
+  else {
+    tparent->startTimer(timer, updateInterval);
+  }
 }
 
 void LsQosLsaHandler::handleStartTimer(cMessage* startTimer) {
   const auto& params = getParams();
-  if (params.lsUpdateStrategy == LsUpdateStrategy::TIMED && params.lsUpdateInterval > 0) {
+  bool timedUpdates = params.lsUpdateStrategy == LsUpdateStrategy::TIMED || params.lsUpdateStrategy == LsUpdateStrategy::HYBRID;
+  if (timedUpdates && params.lsUpdateInterval > 0) {
     tparent->startTimer(&timer, 5.0 + getProtocol()->dblrand() / 5.0);
   }
 }

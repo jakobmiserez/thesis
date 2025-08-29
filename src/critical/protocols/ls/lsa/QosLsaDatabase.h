@@ -30,6 +30,7 @@ class QosLsaDatabase: public LsaListener, public RoutingComponent<LsRouter> {
   private:
     std::map<RouterId, std::unordered_map<int, QosLsa>> database;
     LsaDatabase& lsas;
+    uint64_t entries;
 
   public:
     QosLsaDatabase(LsaDatabase& lsas, CriticalProtocol* protocol);
@@ -42,6 +43,8 @@ class QosLsaDatabase: public LsaListener, public RoutingComponent<LsRouter> {
     size_t size() const { return database.size(); };
 
     const SimplePredictablePort* getQueueStates(const RouterId& routerId, int linkId) const;
+
+    uint64_t computeMemoryFootprint() const;
 
   private:
     QosLinkInfo toQosLsa(const QosLsaPacket* const qosLsaPacket);

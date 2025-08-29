@@ -21,6 +21,13 @@ class FlowMultiplexer: public SingleplexPacketHandler {
 
     virtual void handlePacket(const inet::Packet* const rawPacket) override;
 
+    virtual uint64_t estimateMemoryFootprint() const {
+      uint64_t bytes = 0; 
+      bytes += handlers->size() * sizeof(FlowMapEntry<IPacketHandler*>);
+      return bytes;
+    };
+
+
   protected:
     void removeFlow(FlowId flow);
     virtual FlowId extractFlow(const inet::Packet* const rawPacket) = 0;

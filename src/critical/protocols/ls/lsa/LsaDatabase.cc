@@ -17,7 +17,7 @@ LsaDatabase::~LsaDatabase() {
 
 bool LsaDatabase::insertLsa(const LsaPacket* const lsaPacket) {
   Lsa lsa = toLsa(lsaPacket);
-  EV_INFO << "(LSA DATABASE) Received LSA of " << inet::L3AddressResolver().findHostWithAddress(lsa.id)->getName() << "\n";
+  //EV_INFO << "(LSA DATABASE) Received LSA of " << inet::L3AddressResolver().findHostWithAddress(lsa.id)->getName() << "\n";
 
   const auto& it = map.find(lsa.id);
   if (it != map.end()) {

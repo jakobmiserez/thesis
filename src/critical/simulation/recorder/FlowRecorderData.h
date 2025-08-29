@@ -13,39 +13,45 @@ class FlowRequirements: public cObject {
     FlowParameters params;
     cModule* source;
     cModule* sink;
+    std::string appName;
 
   public:
     FlowRequirements() {};
-    FlowRequirements(FlowParameters params, cModule* source, cModule* sink)
-    : params(params), source(source), sink(sink) {};
+    FlowRequirements(FlowParameters params, cModule* source, cModule* sink, const std::string appName)
+    : params(params), source(source), sink(sink), appName(appName) {};
 
     const FlowParameters& getFlowParameters() { return params; }
     cModule* getSource() { return source; }
     cModule* getSink() { return sink; }
+    std::string& getAppName() { return appName; }
 };
 
 class FlowResponseData: public cObject {
   private:
     cModule* source;
+    FlowId id;
     bool accepted;
   
   public:
     FlowResponseData() {};
-    FlowResponseData(cModule* source, bool accepted): source(source), accepted(accepted) {};
+    FlowResponseData(cModule* source, FlowId id, bool accepted): source(source), id(id), accepted(accepted) {};
 
     cModule* getSource() { return source; };
+    FlowId getId() { return id; };
     bool isAccepted() { return accepted; };
 };
 
 class FlowRequestData: public cObject {
   private:
     cModule* source;
+    FlowId id;
   
   public:
     FlowRequestData() {};
-    FlowRequestData(cModule* source): source(source) {};
+    FlowRequestData(cModule* source, FlowId id): source(source), id(id) {};
 
     cModule* getSource() { return source; };
+    FlowId& getFlowId() { return id; };
 };
 
 class FlowRerouteData: public cObject {
@@ -59,6 +65,30 @@ class FlowRerouteData: public cObject {
 
     cModule* getSource() { return source; };
     bool isAccepted() { return accepted; };
+};
+
+class FlowSignalingData: public cObject {
+  private:
+    FlowId id;
+  
+  public:
+    FlowSignalingData() {};
+    FlowSignalingData(const FlowId& id): id(id) {};
+
+    FlowId& getId() { return id; };
+};
+
+class ProbeReservationData: public cObject {
+  private:
+    FlowId id;
+    int reservationsDelta;
+
+  public:
+    ProbeReservationData() {};
+    ProbeReservationData(const FlowId& id, int delta): id(id), reservationsDelta(delta) {};
+
+    const FlowId& getFlowId() const { return id; };
+    int getDelta() const { return reservationsDelta; };
 };
 
 }

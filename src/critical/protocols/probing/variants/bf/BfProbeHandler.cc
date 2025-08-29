@@ -27,8 +27,8 @@ bool BfProbeHandler::handleMultiplexedPacket(const inet::Packet* const packet) {
   EV_INFO << "(BF PROBE HANDLER) Handling probe packet\n";
   EV_INFO << "(BF PROBE HANDLER) "  << packetData.data->getFlow() << "\n";
 
-  inet::L3AddressResolver resolver;
-  EV_INFO << "(BF PROBE HANDLER) Handling probe packet from " << resolver.findHostWithAddress(packetData.sourceAddress)->getFullPath() << "(" << packetData.sourceInterface << ")\n";
+  //inet::L3AddressResolver resolver;
+  //EV_INFO << "(BF PROBE HANDLER) Handling probe packet from " << resolver.findHostWithAddress(packetData.sourceAddress)->getFullPath() << "(" << packetData.sourceInterface << ")\n";
 
   auto& state = getSharedState();
   auto data = getPacketData(packet);
@@ -104,18 +104,22 @@ bool BfProbeHandler::handleAtDestination() {
     link.allocate(state.params);
 
     queue = link.getQueue();
+
+    getFlowTable().embedFlow(
+      state.flow,
+      state.params,
+      id,
+      state.flow.dest,
+      packetData.sourceInterface,
+      queue,
+      true,
+      true
+    );
   }
 
-  getFlowTable().embedFlow(
-    state.flow,
-    state.params,
-    id,
-    state.flow.dest,
-    packetData.sourceInterface,
-    queue,
-    true,
-    true
-  );
+  getProtocol()->onProbeReservation(state.flow, 1);
+
+  getProtocol()->onPathSignaling(state.flow);
 
   // Send confirmation packet
   sendPacketBack(PacketCreator::createFlowConfirmPacket(state.flow));
@@ -196,6 +200,7 @@ bool BfProbeHandler::handleProbe() {
     return true;
   }
 
+  getProtocol()->onProbeReservation(state.flow, size);
   return false;
 }
 

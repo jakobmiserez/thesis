@@ -74,7 +74,7 @@ class SimplePredictablePort: public Parameterizable {
      * @param queue The index of the queue to add the flow to
      * @param flow The flow modeled as an affine arrival curve
      */
-    bool canAllocateFlow(int queue, const FlowParameters& params) const;
+    bool canAllocateFlow(int queue, const FlowParameters& params, int* failedQueue = nullptr) const;
 
     /**
      * @brief Checks if the given flow can be embedded in any of the queues of this 
@@ -118,6 +118,10 @@ class SimplePredictablePort: public Parameterizable {
     bool check() const;
 
     void printQueueStates() const;
+
+    uint64_t computeMemoryFootprint() const {
+      return sizeof(SimplePredictablePort) + queues.size() * sizeof(PredictableQueue);
+    };
 
     private:
       void updateLowerQueues(int queue);

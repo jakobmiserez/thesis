@@ -68,15 +68,26 @@ bool QosLsaDatabase::insertQosLsa(const QosLsaPacket* const qosLsaPacket) {
 
   EV_INFO << "Link id: " << lsa.linkId << "\n";
 
-  QosLsa& entry = database.at(routerId).at(lsa.linkId);
-
-  EV_INFO << "here\n";
+  auto routerEntry = database.find(routerId);
+  if (routerEntry == database.end()) {
+    EV_ERROR << "QoSLsaDatabase: could not find routerId with id " << routerId.str().c_str() << "\n";
+    return false;
+  }
+  
+  auto lsaEntry = routerEntry->second.find(lsa.linkId);
+  if (lsaEntry == routerEntry->second.end()) {
+    EV_ERROR << "QoSLsaDatabase: could not find " << routerId.str().c_str() << " " << std::to_string(lsa.linkId).c_str() << "\n";
+    return false;
+  }
+  
+  QosLsa& entry = lsaEntry->second;
 
   if (lsa.sequenceNumber > entry.sequenceNumber) {
     protocol->qosOverrides++;
     entry.sequenceNumber = lsa.sequenceNumber;
 
-    adjustQueueStates(lsa.queues, entry.port->getQueueStates());
+    // Should be used if we don't want to believe the new value, and .e.g. maintain an weighted average window
+    //adjustQueueStates(lsa.queues, entry.port->getQueueStates());
 
     entry.port->override(lsa.queues);
     return true;
@@ -117,6 +128,16 @@ void QosLsaDatabase::adjustQueueStates(std::vector<QueueInfo>& queueStates, cons
     //q1.burst += 0.25 * deltaBurst;
     //q1.rate += 0.25 * rateDelta;
   }
+}
+
+uint64_t QosLsaDatabase::computeMemoryFootprint() const {
+  uint64_t bytes = 0;
+  for (const auto& [routerid, entries]: database) {
+    for (const auto& [_, entry]: entries) {
+      bytes += entries.size() * (sizeof(QosLsa) + entry.port->computeMemoryFootprint());
+    }
+  }
+  return bytes;
 }
 
 }

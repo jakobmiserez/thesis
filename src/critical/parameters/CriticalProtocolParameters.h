@@ -11,8 +11,44 @@ enum RoutingProtocol {
 };
 
 enum BudgetAllocator {
+  CUSTOM = 0,
   CHAMELEON,
-  CUSTOM
+  CONST1,
+  EXP,
+  GAP,
+  INCREASING1,
+  INCREASING2,
+  SIMPLE1,
+  SIMPLE2,
+  SIMPLE3,
+  QOPT1,
+  QOPTDISTRANDOM,
+  QOPTDISTVIDEO40,
+  QOPTDISTVIDEO60,
+  QOPTDISTVIDEO80,
+  QOPTDISTVIDEO100,
+  
+
+
+
+  CONSTANT_DIFF_50_100,
+  CONSTANT_DIFF_50_200,
+  CONSTANT_DIFF_100_500,
+  CONSTANT_DIFF_500_500,
+  CONSTANT_DIFF_100_0,
+  CONSTANT_DIFF_500_0,
+  CONSTANT_DIFF_1000_0,
+  
+  LINEAR_DIFF_100_200_100,
+  LINEAR_DIFF_100_400_200,
+  
+  EXP_DIFF_100_100_2,
+  
+  LOG_DIFF,
+
+  QUADRATIC_DIFF
+
+
 };
 
 enum LsAlgorithm {
@@ -23,7 +59,8 @@ enum LsAlgorithm {
 enum LsUpdateStrategy {
   TIMED,
   CONSUMPTION,
-  HYBRID
+  HYBRID,
+  HYBRID_INSTANT
 };
 
 enum ProbingVariant {
@@ -76,6 +113,18 @@ struct CriticalProtocolParameters {
 
   // Probing: enable fast pruning
   bool probingFastPrune;
+  
+  bool recordMemoryFootprint;
+  bool recordQueueStates;
+  bool recordConsumption;
+  bool recordBaselineRouting;
+
+  // Optimization shortcuts
+  bool optimizeMemoryFootprintRecording;
+  bool optimizeLsas;
+  bool optimizePathTables;
+
+  double countPacketStatsAfter;
 };
 
 }

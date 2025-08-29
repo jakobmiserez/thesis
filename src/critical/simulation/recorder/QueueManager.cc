@@ -9,9 +9,13 @@ QueueManager* QueueManager::instance = nullptr;
 void QueueManager::init() {
   getSimulation()->getActiveEnvir()->addLifecycleListener(this);
 
-  out = std::ofstream(getOutputFileName());
+  std::string outputFile = getOutputFileName();
+  out = std::ofstream(outputFile);
   if (out.fail()) {
-    throw cRuntimeError("Unable to open consumption output file name");    
+    std::string msg;
+    msg += "Unable to open consumption output file name: ";
+    msg += outputFile;
+    throw cRuntimeError(msg.c_str());    
   }
   out << "source,interfaceId,queue,time,hd,mhd,vd,mvd\n";
 }

@@ -6,65 +6,81 @@ namespace critical {
 
 FlowRequestResponseManager* FlowRequestResponseManager::instance = nullptr;
 
+void FlowRequestResponseManager::init() {
+  getEnvir()->addLifecycleListener(this);
+  std::string fname = getOutputFileName();
+  std::string rname = getReroutesOutputFileName();
+
+  out = std::ofstream(fname);
+  outReroutes = std::ofstream(rname);
+
+  if (out.fail() || outReroutes.fail()) {
+    std::string msg;
+    msg += "Unable to open consumption output file name: ";
+    msg += fname;
+    msg += "/";
+    msg += rname;
+    throw cRuntimeError(msg.c_str());    
+  }
+  out << "source,requestTime,responseTime,signalingTime,accepted\n";
+
+  outReroutes << "source,rerouteTime,rerouteAccepted\n";
+}
+
 void FlowRequestResponseManager::lifecycleEvent(SimulationLifecycleEventType eventType, cObject *details) {
   if (eventType == SimulationLifecycleEventType::LF_ON_RUN_END) {
-    
-    if (list.size() > 0) {
-      std::ofstream out(fname);
-
-      if (out.fail()) {
-        delete this;
-        instance = nullptr;
-        return;
-      }
-
-      out << "source,requestTime,responseTime,accepted,rerouteTime,rerouteAccepted\n";
-
-      for (const auto& data: list) {
-        out << data.source << ",";
-        out << data.requestTime << ",";
-        out << data.responseTime << ",";
-        out << data.accepted << ",";
-        out << data.rerouteTime << ",";
-        out << data.rerouteAccepted << "\n";
-      }
-
-      out.close();
+    for (const auto& [id, data]: map) {
+      out << data->source << ",";
+      out << data->requestTime << ",";
+      out << data->responseTime << ",";
+      out << data->signalingTime << ",";
+      out << data->accepted << "\n";
     }
+    map.clear();
+    
+    out.close();
+    outReroutes.close();
     delete this;
     instance = nullptr;
   }
 }
 
-void FlowRequestResponseManager::recordFlowRequest(cModule* source, simtime_t t) {
-  Data data;
-  data.requestTime = t;
-  data.source = source->getFullPath();
+void FlowRequestResponseManager::recordFlowRequest(FlowRequestData* reqData, simtime_t t) {
+  Data* data = new Data();
+  data->requestTime = t;
+  data->source = reqData->getSource()->getFullPath();
+  data->id = reqData->getFlowId();
 
-  list.push_back(data);
-  map[source->getId()] = list.size() - 1;
+  map[reqData->getFlowId()] = data;
 }
 
-void FlowRequestResponseManager::recordFlowResponse(cModule* source, simtime_t t, bool accepted) {
-  if (map.find(source->getId()) == map.end()) {
-    return;
-  }
-  int id = map.at(source->getId());
-  
-  Data& data = list[id];
-  data.accepted = accepted;
-  data.responseTime = t;
+void FlowRequestResponseManager::recordFlowResponse(FlowResponseData* respData, simtime_t t) {
+  Data* data = map.at(respData->getId());
+  data->responseTime = t;
+  data->accepted = respData->isAccepted();
+
+  out << data->source << ",";
+  out << data->requestTime << ",";
+  out << data->responseTime << ",";
+  out << data->signalingTime << ",";
+  out << data->accepted << "\n";
+
+  map.erase(respData->getId());
+  delete data;
 }
 
 void FlowRequestResponseManager::recordFlowReroute(cModule* source, simtime_t t, bool accepted) {
-  if (map.find(source->getId()) == map.end()) {
-    return;
-  }
-  int id = map.at(source->getId());
+  outReroutes << source->getFullPath() << ",";
+  outReroutes << t << ",";
+  outReroutes << accepted << "\n";
+}
 
-  Data& data = list[id];
-  data.rerouteTime = t;
-  data.rerouteAccepted = accepted;
+void FlowRequestResponseManager::recordFlowSignaling(FlowSignalingData* sigData, simtime_t t) {
+  Data* data = map.at(sigData->getId()); // todo fix
+
+  // Only record the first signaling time
+  if (data->signalingTime == -1)
+    data->signalingTime = t;
 }
 
 std::string FlowRequestResponseManager::getOutputFileName() {
@@ -75,6 +91,18 @@ std::string FlowRequestResponseManager::getOutputFileName() {
 
   std::string finalName(tokenizer.nextToken());
   finalName += "-flowtimes.csv";
+
+  return finalName;
+}
+
+std::string FlowRequestResponseManager::getReroutesOutputFileName() {
+  cConfigOption* opt = cConfigOption::find("output-scalar-file");
+
+  std::string filename = getSimulation()->getActiveEnvir()->getConfig()->getAsFilename(opt);
+  cStringTokenizer tokenizer(filename.c_str(), ".");
+
+  std::string finalName(tokenizer.nextToken());
+  finalName += "-reroutes.csv";
 
   return finalName;
 }

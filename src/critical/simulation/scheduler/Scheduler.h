@@ -17,15 +17,21 @@ namespace critical {
 
 class Scheduler: public cSimpleModule {
   private:
-    enum TimerKind { START, SCHEDULE };
+    enum TimerKind { START, SCHEDULE, DEMO_SCHEDULE };
 
     cMessage* timer = nullptr;
+    cMessage* demoTimer = nullptr;
     simtime_t startTime;
     simtime_t duration;
     simtime_t interval;
+    int maxScheduledFlows;
     int flowsPerInterval;
+    int packetBurst;
+    bool demoMode;
+    bool dontStartRouting;
 
     std::vector<cModule*> hosts;
+    CriticalAppGenerator::AppDistribution appDistribution;
 
     // Map that keeps track of the number of udp applications of every host
     std::map<cModule*, uint16_t> numUdpApps;
@@ -53,6 +59,7 @@ class Scheduler: public cSimpleModule {
   private:
     void findApplicationHosts();
     void scheduleFlows();
+    void scheduleDemo();
     std::pair<std::string, std::string> scheduleFlow();
 
     void connectUdpApplication(cModule* app, cModule* host);

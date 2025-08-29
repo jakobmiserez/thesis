@@ -25,6 +25,7 @@ void LsEmbedConfirmHandler::handlePacket(const inet::Packet* const rawPacket) {
     );
   }
   else {
+    getProtocol()->tries += router->getTriesTable().lookupFlow(flow)->data;
     router->getTriesTable().deleteFlow(flow);
   }
 }

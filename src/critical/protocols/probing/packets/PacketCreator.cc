@@ -33,7 +33,7 @@ inet::Packet* PacketCreator::createFlowProbePacket(
   packet->setParams(params);
   packet->setStats(stats);
   
-  return wrap(packet, "probe");
+  return wrap(packet, "PROBE");
 }
 
 inet::Packet* PacketCreator::createFlowProbePacket(
@@ -51,28 +51,28 @@ inet::Packet* PacketCreator::createFlowProbePacket(
 inet::Packet* PacketCreator::createFlowPrunePacket(const FlowId& flow) {
   auto packet = inet::makeShared<FlowPrunePacket>();
   packet->setFlow(flow);
-  return wrap(packet, "prune");
+  return wrap(packet, "PRUNE");
 }
 
 inet::Packet* PacketCreator::createFlowFreePacket(const FlowId& flow) {
   inet::Ptr<FlowFreePacket> packet = inet::makeShared<FlowFreePacket>();
   packet->setFlow(flow);
 
-  return wrap(packet, "free"); 
+  return wrap(packet, "FREE"); 
 }
 
 inet::Packet* PacketCreator::createFlowFreeFailurePacket(const FlowId& flow) {
   inet::Ptr<FlowFreeFailurePacket> packet = inet::makeShared<FlowFreeFailurePacket>();
   packet->setFlow(flow);
 
-  return wrap(packet, "free-failure");
+  return wrap(packet, "FREE-FAILURE");
 }
 
 inet::Packet* PacketCreator::createFlowConfirmPacket(const FlowId& flow) {
   inet::Ptr<FlowConfirmPacket> packet = inet::makeShared<FlowConfirmPacket>();
   packet->setFlow(flow);
 
-  return wrap(packet, "confirm");
+  return wrap(packet, "CONFIRM");
 }
 
 }

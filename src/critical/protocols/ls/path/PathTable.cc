@@ -9,6 +9,10 @@ namespace critical {
 
 namespace ls {
 
+PathTable::PathTable(CriticalProtocol* protocol): Parameterizable(protocol) {
+
+}
+
 PathTable::~PathTable() {
   clear();
 }
@@ -26,6 +30,16 @@ void PathTable::clear() {
 void PathTable::insertPath(const Flow& flow, const std::vector<const Topology::Link*>& path) {
   EV_INFO << "(PATH TABLE) Inserting path\n";
 
+  if (getParams().optimizePathTables) {
+    // In a large scale simulation, we will not keep the actual entries since we are not concerned with fault tolerance
+    // So we just keep track of the entries counts here
+    flowMapEntries++;
+    tableEntries += path.size();
+    optimizedData.insertFlow(flow.id, path.size());
+    return;
+  }
+
+  // Creates an entry
   FlowMapEntry<FlowData>* entry = flowMap.insertFlow(flow.id, { flow.params });
   for (const auto& link: path) {
     int linkId = QueueLevelTopologyLinkEncoding::getLinkId(link->getId());
@@ -39,7 +53,21 @@ void PathTable::insertPath(const Flow& flow, const std::vector<const Topology::L
 
 void PathTable::removePath(const FlowId& flow) {
   EV_INFO << "(PATH TABLE) Removing path\n";
+
+  if (getParams().optimizePathTables) {
+    flowMapEntries--;
+    tableEntries -= optimizedData.lookupFlow(flow)->data;
+    optimizedData.deleteFlow(flow);
+    return;
+  }
+
   FlowMapEntry<FlowData>* entry = flowMap.lookupFlow(flow);
+  if (entry == nullptr) {
+    // Should never happen
+    EV_ERROR << "(PATH TABLE) Entry not found: " << flow << "\n";
+    return;
+  }
+  
   for (auto bundle: entry->data.scatteredPath) {
     bundle->entries.erase(entry);
     eraseAndClean(bundle);
@@ -47,6 +75,7 @@ void PathTable::removePath(const FlowId& flow) {
   flowMap.deleteFlow(flow);
 }
 
+// Should not be called in large-scale simulation where no link failures happen
 std::vector<Flow> PathTable::removeAllGoingThrough(const RouterId& routerId, int linkId) {
   EV_INFO << "(PATH TABLE) Removing all paths going through a link\n";
   std::vector<Flow> flows;

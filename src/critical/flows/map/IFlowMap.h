@@ -84,6 +84,11 @@ class IFlowMap {
       return lookupFlow(flow) != nullptr;
     };
 
+    /**
+     * Returns the number of entries in the flowmap 
+     **/
+    virtual size_t size() const = 0;
+
 };
 
 }
