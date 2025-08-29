@@ -23,6 +23,9 @@ simple Scheduler {
             "db40", "db60", "db80", "db100", 
             "prod40", "prod60", "prod80", "prod100"
         ) = default("random");
+
+        // If you only want to generate traffic params
+        bool dontStartRouting = default(true);
         
         @class(critical::Scheduler);
         @signal[flowConfigured](type=critical::FlowRequirements);

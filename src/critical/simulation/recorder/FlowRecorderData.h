@@ -13,15 +13,17 @@ class FlowRequirements: public cObject {
     FlowParameters params;
     cModule* source;
     cModule* sink;
+    std::string appName;
 
   public:
     FlowRequirements() {};
-    FlowRequirements(FlowParameters params, cModule* source, cModule* sink)
-    : params(params), source(source), sink(sink) {};
+    FlowRequirements(FlowParameters params, cModule* source, cModule* sink, const std::string appName)
+    : params(params), source(source), sink(sink), appName(appName) {};
 
     const FlowParameters& getFlowParameters() { return params; }
     cModule* getSource() { return source; }
     cModule* getSink() { return sink; }
+    std::string& getAppName() { return appName; }
 };
 
 class FlowResponseData: public cObject {

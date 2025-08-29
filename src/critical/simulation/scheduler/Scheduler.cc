@@ -36,6 +36,7 @@ void Scheduler::initialize(int stage) {
     timer->setKind(TimerKind::START);
     demoTimer = new cMessage("Demo timer");
     demoTimer->setKind(TimerKind::DEMO_SCHEDULE);
+    dontStartRouting = par("dontStartRouting").boolValue();
     scheduleAt(startTime < simTime() ? simTime() : startTime, timer);
     if (demoMode) {
       scheduleAt(simTime() + SimTime(200, SimTimeUnit::SIMTIME_S), demoTimer);
@@ -106,14 +107,14 @@ std::pair<std::string, std::string> Scheduler::scheduleFlow() {
   uint32_t flowLabel = ++flowLabels[indexOf(host1, host2)];
 
   
-  FlowParameters params = appGen.generateParameters(getRNG(0));
+  auto [params, name] = appGen.generateParameters(getRNG(0));
   cModule* source = addUdpCriticalApplicationTo(
     src, src->getParentModule()->getSubmodule("router"), appUdpPort, 
     dest, sinkUdpPort, flowLabel, params
   );
   cModule* sink = addUdpSinkTo(dest, sinkUdpPort);
 
-  FlowRequirements req(params, source, sink);
+  FlowRequirements req(params, source, sink, name);
   emit(flowConfiguredSignal, &req);
 
   return std::make_pair(src->getParentModule()->getName(), dest->getParentModule()->getName());
@@ -159,8 +160,12 @@ cModule* Scheduler::addUdpCriticalApplicationTo(
 
   connectUdpApplication(app, host);
 
-  app->callInitialize();
-  app->scheduleStart(simTime());
+  // If we don't want to start the routing, don't call initialize
+  // This will make sure that 
+  if (dontStartRouting) {
+    app->callInitialize();
+    app->scheduleStart(simTime());
+  }
 
   return app;
 }
@@ -250,14 +255,14 @@ void Scheduler::scheduleDemo() {
   uint16_t appUdpPort = numUdpApps[madrid]++ + udpAppOffset;
   uint32_t flowLabel = ++flowLabels[indexOf(m, c)];
   
-  FlowParameters params = appGen.generateParameters(getRNG(0));
+  auto [params, name] = appGen.generateParameters(getRNG(0));
   cModule* source = addUdpCriticalApplicationTo(
     madrid, madrid->getParentModule()->getSubmodule("router"), appUdpPort, 
     copenhagen, sinkUdpPort, flowLabel, params
   );
   cModule* sink = addUdpSinkTo(copenhagen, sinkUdpPort);
 
-  FlowRequirements req(params, source, sink);
+  FlowRequirements req(params, source, sink, name);
   emit(flowConfiguredSignal, &req);
 
   EV_INFO << "DONE!\n";

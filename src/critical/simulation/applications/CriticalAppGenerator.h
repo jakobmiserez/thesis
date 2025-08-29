@@ -3,6 +3,7 @@
 
 #include "critical/flows/Flow.h"
 #include <omnetpp.h>
+#include <utility>
 
 using namespace omnetpp;
 
@@ -13,6 +14,7 @@ inline unsigned long mb(unsigned long x) { return x * 1000 * 1000; };
 
 class Application {
   private:
+    std::string name;
     unsigned long rateMin;
     unsigned long rateMax;
     unsigned long burstMin;
@@ -22,6 +24,7 @@ class Application {
 
   public:
     Application(
+      std::string name,
       unsigned long rateMin,
       unsigned long rateMax,
       unsigned long burstMin,
@@ -29,6 +32,7 @@ class Application {
       unsigned long delayMin,
       unsigned long delayMax
     ): 
+      name(name),
       rateMin(rateMin), rateMax(rateMax), 
       burstMin(burstMin), burstMax(burstMax), 
       delayMin(delayMin), delayMax(delayMax) {};
@@ -40,6 +44,10 @@ class Application {
 
       return FlowParameters(delay, rate, burst);
     };
+
+    const std::string& getName() const {
+      return name;
+    }
 };
 
 class CriticalAppGenerator {
@@ -47,18 +55,24 @@ class CriticalAppGenerator {
     enum AppDistribution {
       RANDOM = 0,
       VIDEO_40,
+      VIDEO_50,
       VIDEO_60,
       VIDEO_80,
       VIDEO_100,
       DB_40,
+      DB_50,
       DB_60,
       DB_80,
       DB_100,
       PROD_40,
+      PROD_50,
       PROD_60,
       PROD_80,
       PROD_100,
-
+      CONTROL_50,
+      CONTROL_100,
+      SCADA_50,
+      SCADA_100,
       APP_DISTRIBUTION_COUNT
     };
 
@@ -67,6 +81,8 @@ class CriticalAppGenerator {
         return RANDOM;
       if (appDistributionStr == "video40")
         return VIDEO_40;
+      if (appDistributionStr == "video50")
+        return VIDEO_50;
       if (appDistributionStr == "video60")
         return VIDEO_60;
       if (appDistributionStr == "video80")
@@ -75,6 +91,8 @@ class CriticalAppGenerator {
         return VIDEO_100;
       if (appDistributionStr == "db40")
         return DB_40;
+      if (appDistributionStr == "db50")
+        return DB_50;
       if (appDistributionStr == "db60")
         return DB_60;
       if (appDistributionStr == "db80")
@@ -83,12 +101,22 @@ class CriticalAppGenerator {
         return DB_100;
       if (appDistributionStr == "prod40")
         return PROD_40;
+      if (appDistributionStr == "prod50")
+        return PROD_50;
       if (appDistributionStr == "prod60")
         return PROD_60;
       if (appDistributionStr == "prod80")
         return PROD_80;
       if (appDistributionStr == "prod100")
         return PROD_100;
+      if (appDistributionStr == "control50")
+        return CONTROL_50;
+      if (appDistributionStr == "control100")
+        return CONTROL_100;
+      if (appDistributionStr == "scada50")
+        return SCADA_50;
+      if (appDistributionStr == "scada100")
+        return SCADA_100;
       throw omnetpp::cRuntimeError("Unknown AppDistribution: %s", appDistributionStr.c_str());
     }
 
@@ -113,7 +141,7 @@ class CriticalAppGenerator {
       setupHistogram();
     };
 
-    FlowParameters generateParameters(cRNG* rng);
+    std::pair<FlowParameters, std::string> generateParameters(cRNG* rng);
 
   private:
     void setupHistogram();

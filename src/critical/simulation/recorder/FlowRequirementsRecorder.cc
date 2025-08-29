@@ -17,12 +17,12 @@ void FlowRequirementsRecorder::init() {
   out = std::ofstream(fname);
 
   if (out.fail()) {
-    std::string f = "Failed to open consumption file";
+    std::string f = "Failed to open flow output file";
     f += fname;
     throw cRuntimeError(f.c_str());
   }
 
-  out << "source,sink,delay,rate,burst\n";
+  out << "source,sink,delay,rate,burst,appName\n";
   isInit = true;
 }
 
@@ -60,7 +60,8 @@ void FlowRequirementsRecorder::receiveSignal(cResultFilter *prev, simtime_t_cref
   out << req->getSink()->getFullPath() << ",";
   out << req->getFlowParameters().delay << ",";
   out << req->getFlowParameters().rate << ",";
-  out << req->getFlowParameters().burst << "\n";
+  out << req->getFlowParameters().burst << ",";
+  out << req->getAppName() << "\n";
 }
 
 std::string FlowRequirementsRecorder::getOutputFileName() {

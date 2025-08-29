@@ -28,6 +28,7 @@ class Scheduler: public cSimpleModule {
     int flowsPerInterval;
     int packetBurst;
     bool demoMode;
+    bool dontStartRouting;
 
     std::vector<cModule*> hosts;
     CriticalAppGenerator::AppDistribution appDistribution;
